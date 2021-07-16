@@ -57,6 +57,9 @@
                     </v-list-item-icon>
                     <v-list-item-title>初期化</v-list-item-title>
                 </v-list-item>
+                <v-list-item>
+                    <amplify-sign-out></amplify-sign-out>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
         <v-row justify="center">

@@ -1,6 +1,7 @@
 <template>
     <v-container>
         <h1>サインイン</h1>
+        <amplify-authenticator></amplify-authenticator>
     </v-container>
 </template>
 
