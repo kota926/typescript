@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "amplifyvuelist",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authamplifyvuelistf418a481",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

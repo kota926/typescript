@@ -3,6 +3,8 @@ import VueRouter, { RouteConfig } from 'vue-router'
 import store from '@/store/index'
 import Auth from '@aws-amplify/auth'
 import { AuthState, onAuthUIStateChange } from "@aws-amplify/ui-components"
+import { Hub, API, graphqlOperation } from 'aws-amplify'
+import { createUser } from '../graphql/mutations'
 import SignIn from '../views/SignIn.vue'
 import Home from '../views/Home.vue'
 
@@ -79,5 +81,25 @@ onAuthUIStateChange((authState, authData) => {
     router.push({ name: "SignIn" });
   }
 })
+
+const listener = async (data) => {
+  console.log(data)
+  if(data.payload.event === 'signUp') {
+    console.log('signUp')
+    const d = data.payload.data
+    const userDetails = {
+      id: d.userSub,
+      name: d.user.username,
+      categories: ['カテゴリー']!
+    }
+    const newUser = await API.graphql(graphqlOperation(
+        createUser,
+        {input: userDetails}
+      ));
+    console.log(newUser)
+  }
+}
+
+Hub.listen('auth', listener);
 
 export default router

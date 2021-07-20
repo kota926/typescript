@@ -1,0 +1,34 @@
+type User
+  @model
+  @auth(rules: [{ allow: owner, operations: [read, delete, update]}]) {
+  id: ID!
+  name: String!
+  categories: [String]!
+  lists: [List] @connection(keyName: "byUser", fields: ["id"])
+}
+
+type List
+  @model
+  @auth(rules: [{ allow: owner}])
+  @key(name: "byUser", fields: ["userID"]) {
+  id: ID!
+  title: String!
+  userID: ID!
+  user: User @connection(fields: ["userID"])
+  categories: [String]!
+  words: [Word] @connection(keyName: "byList", fields: ["id"])
+}
+
+type Word
+  @model
+  @auth(rules: [{ allow: owner}])
+  @key(name: "byList", fields: ["listID", "question"]) {
+  id: ID!
+  listID: ID!
+  list: List @connection(fields: ["listID"])
+  question: String!
+  answer: String!
+  english: String
+  japanese: String
+  translation: String
+}

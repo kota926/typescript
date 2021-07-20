@@ -40,7 +40,7 @@
                                 <v-btn
                                     outlined
                                     color="green"
-                                    
+                                    @click="toCorrect(list.id)"
                                 >
                                     詳細
                                 </v-btn>
@@ -134,6 +134,8 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import { API, graphqlOperation } from 'aws-amplify';
+    import { listLists } from '../graphql/queries'
 
     @Component
     export default class ListTable extends Vue {
@@ -146,6 +148,24 @@
             }   
         ]
 
+        async created() {
+            await this.getLists();
+        }
+
+        public async getLists() {
+            const result: any = await API.graphql(graphqlOperation(listLists))
+            console.log(result)
+            this.lists = result.data.listLists.items
+        }
+
+        // public async create() {
+        //     const result: any = await API.graphql(graphqlOperation())
+        // }
+
+        toCorrect(item_id) {
+            this.$store.commit('changeCurrentID', item_id)
+            this.$router.push('List')
+        }
         toggleBtn() {
             if(this.dialog) {
                 this.dialog = false
