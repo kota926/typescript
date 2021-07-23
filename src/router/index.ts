@@ -49,7 +49,7 @@ function getAuthenticatedUser() {
     }
   }).catch((e) => {
     console.error(e);
-    store.commit("setUser", null);
+    store.commit("nullUser", null);
     return null
   });
 }

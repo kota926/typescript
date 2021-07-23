@@ -2,7 +2,7 @@
     <v-container>
         <v-row dense>
             <v-col
-                v-for="(item, key) in fetchWords" v-bind:key="key"
+                v-for="(item, key) in words" v-bind:key="key"
                 cols="12"
                 lg="6"
             >
@@ -40,7 +40,7 @@
                             color="primary"
                             outlined
                             dark
-                            
+                            @click="passWord(item)"
                             >
                             修正
                             </v-btn>
@@ -148,7 +148,7 @@
                     color="blue darken-1"
                     text
                     outlined
-                    @click="dialog = false"
+                    @click="correctWord"
                 >
                     保存
                 </v-btn>
@@ -160,14 +160,14 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import { Component, Vue, Watch } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify';
-    import { searchWords } from '../graphql/queries';
-    import { onCreateWord } from '../graphql/subscriptions'
-    import { deleteWord } from '../graphql/mutations'
+    import { getList } from '../graphql/queries';
+    import { onCreateWord, onUpdateWord } from '../graphql/subscriptions'
+    import { deleteWord, updateWord } from '../graphql/mutations'
     import { Observable } from 'zen-observable-ts'
     import { GraphQLResult } from '@aws-amplify/api'
-    import { SearchWordsQuery, SearchWordsQueryVariables, OnCreateWordSubscription } from '../API'
+    import { GetListQuery, OnUpdateWordSubscription } from '../API'
 
     @Component
     export default class WordTable extends Vue {
@@ -178,12 +178,28 @@
         english = ""
         japanese = ""
         translation = ""
-
-        get fetchWords() {
-            // this.getList()
-            // this.subscribeWord()
-            return this.$store.state.currentList.words.items
+        words = []
+        
+        async created() {
+            console.log(this.$store.state.currentListID)
+            const list: any = await API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
+            console.log(list)
+            this.$store.commit('changeCurrentList', list.data.getList)
+            // console.log('commited shageCurrentList')
+            // console.log(this.$store.state.currentList.words.items)
+            this.fetchWord()
         }
+
+        fetchWord() {
+            this.words = this.$store.state.currentList.words.items
+        }
+
+        // @Watch('words')
+        // onChangeWord(next, pre) {
+        //     console.log(next)
+        //     console.log(pre)
+        //     this.words = this.$store.state.currentList.words.items
+        // }
 
         // public async getList(): Promise<void> {
         //     const querySort = {
@@ -223,6 +239,27 @@
         //         }
         //     })
         // }
+
+        // onUpdateSubscribeWord() {
+        //     const subscription = API.graphql(graphqlOperation(onUpdateWord)) as Observable<OnUpdateWordSubscription>
+        //     subscription.subscribe({
+        //         next: (result) => {
+        //             console.log(result)
+        //         },
+        //         error: (error) => {
+        //             console.log(error);
+        //         }
+        //     })
+        // }
+
+        get canAddWord() {
+            if(this.trimedQuestion !== '' && this.trimedAnswer !== '') {
+                return this.trimedQuestion.includes(this.trimedAnswer)
+            } else {
+                return false
+            }
+        }
+
         get trimedQuestion() {
             return this.question.trim()
         }
@@ -238,12 +275,62 @@
         get trimedTranslation() {
             return this.translation.trim()
         }
+        get nullEnglish() {
+            if(this.trimedEnglish === "") {
+                return this.trimedAnswer
+            } else {
+                return this.trimedEnglish
+            }
+        }
+        get nullJapanese() {
+            if(this.trimedJapanese === "") {
+                return "未記入"
+            } else {
+                return this.trimedJapanese
+            }
+        }
+        get nullTranslation() {
+            if(this.trimedTranslation === "") {
+                return "未記入"
+            } else {
+                return this.trimedTranslation
+            }
+        }
 
         async deleteWord(item_id) {
             const deletedWord = await API.graphql(graphqlOperation(deleteWord, {input: {id: item_id}}))
             console.log(deletedWord)
-            
+        
             this.$store.commit('deleteWord', item_id)
+        }
+
+        passWord(item) {
+            this.dialog = true
+            this.id = item.id
+            this.question = item.question
+            this.answer = item.answer
+            this.english = item.english
+            this.japanese = item.japanese
+            this.translation = item.translation
+        }
+
+        async correctWord() {
+            if(this.canAddWord) {
+                const wordDetails = {
+                    id: this.id,
+                    question: this.trimedQuestion,
+                    answer: this.trimedAnswer,
+                    english: this.nullEnglish,
+                    japanese: this.nullJapanese,
+                    translation: this.nullTranslation
+                }
+                console.log(wordDetails)
+                const word: any = await API.graphql(graphqlOperation(updateWord, {input: wordDetails}))
+                console.log(word)
+                this.$store.commit('correctWord', word.data.updateWord)
+                this.dialog = false
+
+            }
         }
     }
 </script>

@@ -146,13 +146,7 @@
     @Component
     export default class ListTable extends Vue {
         dialog = false
-        lists = [
-            {
-                id: "1",
-                title: "サンプル",
-                categories: ["重要単語"],
-            }   
-        ]
+        lists = []
 
         async created() {
             await this.createUser()
@@ -288,9 +282,10 @@
         }
 
         async toCorrect(item_id: string) {
-            const list: any = await API.graphql(graphqlOperation(getList, {id: item_id}))
-            console.log(list)
-            this.$store.commit('changeCurrentList', list.data.getList)
+            this.$store.commit('changeCurrentListID', item_id)
+            // const list: any = await API.graphql(graphqlOperation(getList, {id: item_id}))
+            // console.log(list)
+            // this.$store.commit('changeCurrentList', list.data.getList)
             this.$router.push('List')
         }
         
@@ -302,14 +297,14 @@
             }
         }
 
-        confirm() {
-            this
-        }
-
-        async deleteList(item_id) {
-            const deletedList = await API.graphql(graphqlOperation(deleteList, {input: {id: item_id}}))
+        deleteList(item_id) {
+            const deletedList: any = API.graphql(graphqlOperation(deleteList, {input: {id: item_id}}))
             console.log(deletedList)
-            this.fetchUser
+            deletedList.then(() => {
+                this.fetchUser()
+                console.log('then')
+            })
+            this.dialog = false
         }
         // subscribeDeleteList() {
         //     const subscription: any = API.graphql(graphqlOperation(onDeleteList)) as Observable<OnDeleteListSubscription>

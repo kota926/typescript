@@ -26,7 +26,7 @@
                         </v-icon>
                         {{ responsiveBack }}
                     </v-btn>
-                    <v-toolbar-title class="mx-3">タイトル</v-toolbar-title>
+                    <v-toolbar-title class="mx-3">{{ list.title }}</v-toolbar-title>
                 </v-col>
                 <v-col cols="2" class="d-flex justify-end">
                     <template>
@@ -42,7 +42,7 @@
                                 color="gray"
                                 v-bind="attrs"
                                 v-on="on"
-                                
+                                @click="passCategories"
                                 small
                             >
                                 <v-icon>mdi-pencil</v-icon>
@@ -99,7 +99,7 @@
                                             fab
                                             dark
                                             color="indigo"
-                                            
+                                            @click="addCategory"
                                         >
                                         <v-icon dark>
                                             mdi-plus
@@ -131,7 +131,7 @@
                                             fab
                                             dark
                                             color="indigo"
-                                            
+                                            @click="deleteCategory"
                                         >
                                         <v-icon dark>
                                             mdi-delete
@@ -154,7 +154,7 @@
                                 color="blue darken-1"
                                 text
                                 outlined
-                                @click="dialog = false"
+                                @click="correctInfo"
                             >
                                 保存
                             </v-btn>
@@ -197,7 +197,34 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import { API, graphqlOperation } from 'aws-amplify';
+    import { getList, getUser } from '../graphql/queries'
+    import { updateUser, updateList } from '../graphql/mutations'
 
+    interface word {
+        answer: string;
+        createdAt: string;
+        english: string;
+        id: string;
+        japanese: string;
+        listID: string;
+        owner: string;
+        question: string;
+        translation: string;
+        updatedAt: string
+    }
+
+    interface list {
+        categories: string[];
+        createdAt: string;
+        id: string;
+        owner: string;
+        title: string;
+        updatedAt: string;
+        user: any;
+        userID: string;
+        words: {items: word[]}
+    }
     @Component
     export default class ListNav extends Vue {
         dialog = false
@@ -207,6 +234,16 @@
         selectedCategories: string[] = []
         titleName = ""
         currentInfo = {}
+        list = {} as list
+
+        created() {
+            const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
+            console.log(list)
+            list.then((result) => {
+                console.log(result)
+                this.list = result.data.getList
+            })
+        }
 
         get trimedTitle() {
             return this.titleName.trim()
@@ -220,6 +257,81 @@
             } else {
                 return 'Back'
             }
+        }
+
+        passCategories() {
+            // const getUserCategories = `
+            //     query GetUserCategories($id: ID!) {
+            //         getUserCategories(id: $id) {
+            //             categories
+            //         }
+            //     }
+            // `;
+            const user: any = API.graphql(graphqlOperation(getUser, {id: this.$store.state.userID}))
+            console.log(user)
+            user.then((result) => {
+                this.titleName = this.list.title
+                this.selectedCategories = this.list.categories
+                this.categories = result.data.getUser.categories
+                this.deletedCategory = ""
+                this.categoryName = ""
+            })
+            
+        }
+
+        async addCategory() {
+            this.categories.push(this.trimedCategory)
+            const categoryDetails = {
+                id: this.$store.state.userID as string,
+                categories: this.categories
+            }
+            console.log(categoryDetails)
+            const updatedCategory = await API.graphql({ query: updateUser, variables: {input: categoryDetails}})
+            console.log(updatedCategory)
+            this.categoryName = ""
+        }
+
+        async correctInfo() {
+            const infoDetails = {
+                id: this.$store.state.currentListID,
+                title: this.trimedTitle,
+                categories: this.selectedCategories
+            }
+            const updatedList = await API.graphql(graphqlOperation(updateList, {input: infoDetails}))
+            console.log(updatedList)
+            const list: any = await API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
+            console.log(list)
+            // list.then((result) => {
+            //     console.log(result)
+            //     this.list = result.data.getList
+            // })
+            this.list = list.data.getList
+            this.dialog = false
+        }
+
+        async deleteCategory() {
+            const listIndex = this.list.categories.findIndex((category) => {
+                return category === this.deletedCategory
+            })
+            if(listIndex !== -1) {
+                this.list.categories.splice(listIndex, 1)
+                const newCategories = {
+                    id: this.$store.state.currentListID,
+                    categories: this.list.categories
+                }
+                const updatedList = await API.graphql(graphqlOperation(updateList, {input: newCategories}))
+                console.log(updatedList)
+            }
+            const userIndex = this.categories.findIndex((category) => {
+                return category === this.deletedCategory
+            })
+            this.categories.splice(userIndex, 1)
+            const userDetails = {
+                id: this.$store.state.userID,
+                categories: this.categories
+            }
+            const deletedUser = await API.graphql(graphqlOperation(updateUser, {input: userDetails}))
+            console.log(deletedUser)
         }
 
         toHome() {

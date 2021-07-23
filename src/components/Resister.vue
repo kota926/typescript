@@ -174,9 +174,9 @@
 
         async addWord() {
             if(this.canAddWord) {
-                console.log(this.$store.state.currentList)
+                console.log(this.$store.state.currentListID)
                 const wordDetails = {
-                listID: this.$store.state.currentList.id,
+                listID: this.$store.state.currentListID,
                 question: this.trimedQuestion,
                 answer: this.trimedAnswer,
                 english: this.nullEnglish,

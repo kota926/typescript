@@ -1,7 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createdPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
+
+const option = {
+  reducer: state => ({
+    currentListID: state.currentListID,
+    userID: state.userID
+  }),
+}
 
 interface word {
   answer: string;
@@ -31,7 +39,8 @@ interface list {
 export default new Vuex.Store({
   state: {
     user: null,
-    currentID: "",
+    userID: null,
+    currentListID: null,
     currentList: {} as list,
     // signupUser: {
     //   id: "",
@@ -42,17 +51,21 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user) {
       state.user = user
+      state.userID = user.attributes.sub
     },
-    // setSignupUser(state, user) {
-    //   state.signupUser = user
-    // },
-    changeCurrentID(state, id) {
-      state.currentID = id
+    nullUser(state, id) {
+      state.user = null
+      state.userID = null
+      state.currentListID = null
+    },
+    changeCurrentListID(state, id) {
+      state.currentListID = id
     },
     changeCurrentList(state, list) {
       state.currentList = list
     },
     unshiftWord(state, word) {
+      console.log(state.currentList)
       state.currentList.words.items.unshift(word)
     },
     deleteWord(state, word_id) {
@@ -63,10 +76,22 @@ export default new Vuex.Store({
         state.currentList.words.items.splice(findID, 1)
         console.log("deleteWord is executed")
       } 
+    },
+    correctWord(state, word) {
+      const listWords = state.currentList.words.items
+      const index = listWords.findIndex((item) => {
+        return item.id === word.id
+      })
+      listWords[index].question = word.question
+      listWords[index].answer = word.answer
+      listWords[index].english= word.english
+      listWords[index].japanese = word.japanese
+      listWords[index].translation = word.translation
     }
   },
   actions: {
   },
   modules: {
   },
+  plugins: [createdPersistedState(option)]
 })

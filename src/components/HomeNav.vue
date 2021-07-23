@@ -121,7 +121,7 @@
             console.log(listDetails)
             const createdList: any = await API.graphql(graphqlOperation(createList, {input: listDetails}))
             console.log(createdList)
-            this.$store.commit('changeCurrentList', createdList.data.createList)
+            this.$store.commit('changeCurrentListID', createdList.data.createList.id)
             this.$router.push('List')
         }
 
