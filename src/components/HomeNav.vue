@@ -37,7 +37,7 @@
                 fab
                 dark
                 color="indigo"
-                
+                @click="addList"
             >
                 <v-icon dark>
                     mdi-plus
@@ -90,7 +90,7 @@
                 <v-btn
                     color="red darken-1"
                     outlined
-                    
+                    @click="clear"
                     class="ml-4"
                 >
                     Yes
@@ -104,11 +104,31 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import { API, graphqlOperation } from 'aws-amplify'
+    import { createList } from '../graphql/mutations'
 
     @Component
     export default class HomeNAv extends Vue {
         drawer = false
         dialog = false
+
+        async addList() {
+            const listDetails = {
+                title: 'タイトル',
+                userID: this.$store.state.user.attributes.sub,
+                categories: ['カテゴリー']
+            }
+            console.log(listDetails)
+            const createdList: any = await API.graphql(graphqlOperation(createList, {input: listDetails}))
+            console.log(createdList)
+            this.$store.commit('changeCurrentList', createdList.data.createList)
+            this.$router.push('List')
+        }
+
+        clear() {
+            this.dialog = false
+            window.localStorage.removeItem('vuex')
+        }
     }
 </script>
 

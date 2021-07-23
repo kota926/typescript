@@ -1,6 +1,6 @@
 type User
   @model
-  @auth(rules: [{ allow: owner, operations: [read, delete, update]}]) {
+  @auth(rules: [{ allow: owner, operations: [create, delete, update]}]) {
   id: ID!
   name: String!
   categories: [String]!
@@ -9,7 +9,8 @@ type User
 
 type List
   @model
-  @auth(rules: [{ allow: owner}])
+  @auth(rules: [{ allow: owner, operations: [create, delete, update]}])
+  @searchable
   @key(name: "byUser", fields: ["userID"]) {
   id: ID!
   title: String!
@@ -17,11 +18,13 @@ type List
   user: User @connection(fields: ["userID"])
   categories: [String]!
   words: [Word] @connection(keyName: "byList", fields: ["id"])
+  createdAt: AWSDateTime!
 }
 
 type Word
   @model
-  @auth(rules: [{ allow: owner}])
+  @auth(rules: [{ allow: owner, operations: [create, delete, update]}])
+  @searchable
   @key(name: "byList", fields: ["listID", "question"]) {
   id: ID!
   listID: ID!
@@ -31,4 +34,5 @@ type Word
   english: String
   japanese: String
   translation: String
+  createdAt: AWSDateTime!
 }

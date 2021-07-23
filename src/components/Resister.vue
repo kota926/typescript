@@ -83,7 +83,7 @@
                     fab
                     dark
                     color="indigo"
-                    
+                    @click="addWord"
                 >
                     <v-icon dark>
                         mdi-plus
@@ -116,6 +116,8 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import { API, graphqlOperation } from 'aws-amplify';
+    import { createWord } from '../graphql/mutations'
 
     @Component
     export default class Resister extends Vue {
@@ -167,6 +169,31 @@
                 return "未記入"
             } else {
                 return this.trimedTranslation
+            }
+        }
+
+        async addWord() {
+            if(this.canAddWord) {
+                console.log(this.$store.state.currentList)
+                const wordDetails = {
+                listID: this.$store.state.currentList.id,
+                question: this.trimedQuestion,
+                answer: this.trimedAnswer,
+                english: this.nullEnglish,
+                japanese: this.nullJapanese,
+                translation: this.nullTranslation
+                }
+                console.log(wordDetails)
+                const word: any = await API.graphql(graphqlOperation(createWord, {input: wordDetails}))
+                console.log(word)
+
+                this.$store.commit('unshiftWord', word.data.createWord)
+
+                this.question = ""
+                this.answer = ""
+                this.english = ""
+                this.japanese = ""
+                this.translation = ""
             }
         }
 

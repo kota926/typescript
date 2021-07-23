@@ -186,3 +186,84 @@ export const listWords = /* GraphQL */ `
     }
   }
 `;
+export const searchLists = /* GraphQL */ `
+  query SearchLists(
+    $filter: SearchableListFilterInput
+    $sort: SearchableListSortInput
+    $limit: Int
+    $nextToken: String
+    $from: Int
+  ) {
+    searchLists(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+    ) {
+      items {
+        id
+        title
+        userID
+        user {
+          id
+          name
+          categories
+          createdAt
+          updatedAt
+          owner
+        }
+        categories
+        words {
+          nextToken
+        }
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+      total
+    }
+  }
+`;
+export const searchWords = /* GraphQL */ `
+  query SearchWords(
+    $filter: SearchableWordFilterInput
+    $sort: SearchableWordSortInput
+    $limit: Int
+    $nextToken: String
+    $from: Int
+  ) {
+    searchWords(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+    ) {
+      items {
+        id
+        listID
+        list {
+          id
+          title
+          userID
+          categories
+          createdAt
+          updatedAt
+          owner
+        }
+        question
+        answer
+        english
+        japanese
+        translation
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+      total
+    }
+  }
+`;

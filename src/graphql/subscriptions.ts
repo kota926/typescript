@@ -3,8 +3,8 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreateUser = /* GraphQL */ `
-  subscription OnCreateUser($owner: String!) {
-    onCreateUser(owner: $owner) {
+  subscription OnCreateUser {
+    onCreateUser {
       id
       name
       categories
@@ -27,8 +27,8 @@ export const onCreateUser = /* GraphQL */ `
   }
 `;
 export const onUpdateUser = /* GraphQL */ `
-  subscription OnUpdateUser($owner: String!) {
-    onUpdateUser(owner: $owner) {
+  subscription OnUpdateUser {
+    onUpdateUser {
       id
       name
       categories
@@ -51,8 +51,8 @@ export const onUpdateUser = /* GraphQL */ `
   }
 `;
 export const onDeleteUser = /* GraphQL */ `
-  subscription OnDeleteUser($owner: String!) {
-    onDeleteUser(owner: $owner) {
+  subscription OnDeleteUser {
+    onDeleteUser {
       id
       name
       categories
@@ -75,8 +75,8 @@ export const onDeleteUser = /* GraphQL */ `
   }
 `;
 export const onCreateList = /* GraphQL */ `
-  subscription OnCreateList($owner: String!) {
-    onCreateList(owner: $owner) {
+  subscription OnCreateList {
+    onCreateList {
       id
       title
       userID
@@ -114,8 +114,8 @@ export const onCreateList = /* GraphQL */ `
   }
 `;
 export const onUpdateList = /* GraphQL */ `
-  subscription OnUpdateList($owner: String!) {
-    onUpdateList(owner: $owner) {
+  subscription OnUpdateList {
+    onUpdateList {
       id
       title
       userID
@@ -153,8 +153,8 @@ export const onUpdateList = /* GraphQL */ `
   }
 `;
 export const onDeleteList = /* GraphQL */ `
-  subscription OnDeleteList($owner: String!) {
-    onDeleteList(owner: $owner) {
+  subscription OnDeleteList {
+    onDeleteList {
       id
       title
       userID
@@ -192,8 +192,8 @@ export const onDeleteList = /* GraphQL */ `
   }
 `;
 export const onCreateWord = /* GraphQL */ `
-  subscription OnCreateWord($owner: String!) {
-    onCreateWord(owner: $owner) {
+  subscription OnCreateWord {
+    onCreateWord {
       id
       listID
       list {
@@ -228,8 +228,8 @@ export const onCreateWord = /* GraphQL */ `
   }
 `;
 export const onUpdateWord = /* GraphQL */ `
-  subscription OnUpdateWord($owner: String!) {
-    onUpdateWord(owner: $owner) {
+  subscription OnUpdateWord {
+    onUpdateWord {
       id
       listID
       list {
@@ -264,8 +264,8 @@ export const onUpdateWord = /* GraphQL */ `
   }
 `;
 export const onDeleteWord = /* GraphQL */ `
-  subscription OnDeleteWord($owner: String!) {
-    onDeleteWord(owner: $owner) {
+  subscription OnDeleteWord {
+    onDeleteWord {
       id
       listID
       list {

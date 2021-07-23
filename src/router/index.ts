@@ -82,24 +82,32 @@ onAuthUIStateChange((authState, authData) => {
   }
 })
 
-const listener = async (data) => {
-  console.log(data)
-  if(data.payload.event === 'signUp') {
-    console.log('signUp')
-    const d = data.payload.data
-    const userDetails = {
-      id: d.userSub,
-      name: d.user.username,
-      categories: ['カテゴリー']!
-    }
-    const newUser = await API.graphql(graphqlOperation(
-        createUser,
-        {input: userDetails}
-      ));
-    console.log(newUser)
-  }
-}
+// const listener = async (data) => {
+//   console.log('hub')
+//   console.log(data)
+//   if(data.payload.event === 'signUp') {
+//     console.log('hub, signUp')
+//     const d = data.payload.data
+//     const userDetails = {
+//       id: d.userSub,
+//       name: d.user.username,
+//       categories: ['カテゴリー'],
+//     }
+//     console.log(userDetails)
+//     store.commit('setSignupUser', userDetails)
+//   }
+//   if(data.payload.event === 'signIn') {
+//       console.log('hub, signin')
+//       const userDetails = store.state.signupUser
+//       const newUser = await API.graphql(graphqlOperation(
+//           createUser,
+//           {input: userDetails}
+//         ));
+//       console.log(newUser)
+//       store.commit('setSignupUser', {id: "", name: "", categories: ['category']})
+//     }
+// }
 
-Hub.listen('auth', listener);
+// Hub.listen('auth', listener);
 
 export default router

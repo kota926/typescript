@@ -122,12 +122,14 @@ export type CreateListInput = {
   title: string,
   userID: string,
   categories: Array< string | null >,
+  createdAt?: string | null,
 };
 
 export type ModelListConditionInput = {
   title?: ModelStringInput | null,
   userID?: ModelIDInput | null,
   categories?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
   and?: Array< ModelListConditionInput | null > | null,
   or?: Array< ModelListConditionInput | null > | null,
   not?: ModelListConditionInput | null,
@@ -154,6 +156,7 @@ export type UpdateListInput = {
   title?: string | null,
   userID?: string | null,
   categories?: Array< string | null > | null,
+  createdAt?: string | null,
 };
 
 export type DeleteListInput = {
@@ -168,6 +171,7 @@ export type CreateWordInput = {
   english?: string | null,
   japanese?: string | null,
   translation?: string | null,
+  createdAt?: string | null,
 };
 
 export type ModelWordConditionInput = {
@@ -177,6 +181,7 @@ export type ModelWordConditionInput = {
   english?: ModelStringInput | null,
   japanese?: ModelStringInput | null,
   translation?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
   and?: Array< ModelWordConditionInput | null > | null,
   or?: Array< ModelWordConditionInput | null > | null,
   not?: ModelWordConditionInput | null,
@@ -190,6 +195,7 @@ export type UpdateWordInput = {
   english?: string | null,
   japanese?: string | null,
   translation?: string | null,
+  createdAt?: string | null,
 };
 
 export type DeleteWordInput = {
@@ -216,6 +222,7 @@ export type ModelListFilterInput = {
   title?: ModelStringInput | null,
   userID?: ModelIDInput | null,
   categories?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
   and?: Array< ModelListFilterInput | null > | null,
   or?: Array< ModelListFilterInput | null > | null,
   not?: ModelListFilterInput | null,
@@ -229,9 +236,120 @@ export type ModelWordFilterInput = {
   english?: ModelStringInput | null,
   japanese?: ModelStringInput | null,
   translation?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
   and?: Array< ModelWordFilterInput | null > | null,
   or?: Array< ModelWordFilterInput | null > | null,
   not?: ModelWordFilterInput | null,
+};
+
+export type SearchableListFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  title?: SearchableStringFilterInput | null,
+  userID?: SearchableIDFilterInput | null,
+  categories?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  and?: Array< SearchableListFilterInput | null > | null,
+  or?: Array< SearchableListFilterInput | null > | null,
+  not?: SearchableListFilterInput | null,
+};
+
+export type SearchableIDFilterInput = {
+  ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
+  eq?: string | null,
+  match?: string | null,
+  matchPhrase?: string | null,
+  matchPhrasePrefix?: string | null,
+  multiMatch?: string | null,
+  exists?: boolean | null,
+  wildcard?: string | null,
+  regexp?: string | null,
+  range?: Array< string | null > | null,
+};
+
+export type SearchableStringFilterInput = {
+  ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
+  eq?: string | null,
+  match?: string | null,
+  matchPhrase?: string | null,
+  matchPhrasePrefix?: string | null,
+  multiMatch?: string | null,
+  exists?: boolean | null,
+  wildcard?: string | null,
+  regexp?: string | null,
+  range?: Array< string | null > | null,
+};
+
+export type SearchableListSortInput = {
+  field?: SearchableListSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableListSortableFields {
+  id = "id",
+  title = "title",
+  userID = "userID",
+  categories = "categories",
+  createdAt = "createdAt",
+}
+
+
+export enum SearchableSortDirection {
+  asc = "asc",
+  desc = "desc",
+}
+
+
+export type SearchableListConnection = {
+  __typename: "SearchableListConnection",
+  items?:  Array<List | null > | null,
+  nextToken?: string | null,
+  total?: number | null,
+};
+
+export type SearchableWordFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  listID?: SearchableIDFilterInput | null,
+  question?: SearchableStringFilterInput | null,
+  answer?: SearchableStringFilterInput | null,
+  english?: SearchableStringFilterInput | null,
+  japanese?: SearchableStringFilterInput | null,
+  translation?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  and?: Array< SearchableWordFilterInput | null > | null,
+  or?: Array< SearchableWordFilterInput | null > | null,
+  not?: SearchableWordFilterInput | null,
+};
+
+export type SearchableWordSortInput = {
+  field?: SearchableWordSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableWordSortableFields {
+  id = "id",
+  listID = "listID",
+  question = "question",
+  answer = "answer",
+  english = "english",
+  japanese = "japanese",
+  translation = "translation",
+  createdAt = "createdAt",
+}
+
+
+export type SearchableWordConnection = {
+  __typename: "SearchableWordConnection",
+  items?:  Array<Word | null > | null,
+  nextToken?: string | null,
+  total?: number | null,
 };
 
 export type CreateUserMutationVariables = {
@@ -821,8 +939,82 @@ export type ListWordsQuery = {
   } | null,
 };
 
-export type OnCreateUserSubscriptionVariables = {
-  owner: string,
+export type SearchListsQueryVariables = {
+  filter?: SearchableListFilterInput | null,
+  sort?: SearchableListSortInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+};
+
+export type SearchListsQuery = {
+  searchLists?:  {
+    __typename: "SearchableListConnection",
+    items?:  Array< {
+      __typename: "List",
+      id: string,
+      title: string,
+      userID: string,
+      user?:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        categories: Array< string | null >,
+        createdAt: string,
+        updatedAt: string,
+        owner?: string | null,
+      } | null,
+      categories: Array< string | null >,
+      words?:  {
+        __typename: "ModelWordConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null > | null,
+    nextToken?: string | null,
+    total?: number | null,
+  } | null,
+};
+
+export type SearchWordsQueryVariables = {
+  filter?: SearchableWordFilterInput | null,
+  sort?: SearchableWordSortInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+};
+
+export type SearchWordsQuery = {
+  searchWords?:  {
+    __typename: "SearchableWordConnection",
+    items?:  Array< {
+      __typename: "Word",
+      id: string,
+      listID: string,
+      list?:  {
+        __typename: "List",
+        id: string,
+        title: string,
+        userID: string,
+        categories: Array< string | null >,
+        createdAt: string,
+        updatedAt: string,
+        owner?: string | null,
+      } | null,
+      question: string,
+      answer: string,
+      english?: string | null,
+      japanese?: string | null,
+      translation?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null > | null,
+    nextToken?: string | null,
+    total?: number | null,
+  } | null,
 };
 
 export type OnCreateUserSubscription = {
@@ -851,10 +1043,6 @@ export type OnCreateUserSubscription = {
   } | null,
 };
 
-export type OnUpdateUserSubscriptionVariables = {
-  owner: string,
-};
-
 export type OnUpdateUserSubscription = {
   onUpdateUser?:  {
     __typename: "User",
@@ -881,10 +1069,6 @@ export type OnUpdateUserSubscription = {
   } | null,
 };
 
-export type OnDeleteUserSubscriptionVariables = {
-  owner: string,
-};
-
 export type OnDeleteUserSubscription = {
   onDeleteUser?:  {
     __typename: "User",
@@ -909,10 +1093,6 @@ export type OnDeleteUserSubscription = {
     updatedAt: string,
     owner?: string | null,
   } | null,
-};
-
-export type OnCreateListSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnCreateListSubscription = {
@@ -958,10 +1138,6 @@ export type OnCreateListSubscription = {
   } | null,
 };
 
-export type OnUpdateListSubscriptionVariables = {
-  owner: string,
-};
-
 export type OnUpdateListSubscription = {
   onUpdateList?:  {
     __typename: "List",
@@ -1003,10 +1179,6 @@ export type OnUpdateListSubscription = {
     updatedAt: string,
     owner?: string | null,
   } | null,
-};
-
-export type OnDeleteListSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnDeleteListSubscription = {
@@ -1052,10 +1224,6 @@ export type OnDeleteListSubscription = {
   } | null,
 };
 
-export type OnCreateWordSubscriptionVariables = {
-  owner: string,
-};
-
 export type OnCreateWordSubscription = {
   onCreateWord?:  {
     __typename: "Word",
@@ -1095,10 +1263,6 @@ export type OnCreateWordSubscription = {
   } | null,
 };
 
-export type OnUpdateWordSubscriptionVariables = {
-  owner: string,
-};
-
 export type OnUpdateWordSubscription = {
   onUpdateWord?:  {
     __typename: "Word",
@@ -1136,10 +1300,6 @@ export type OnUpdateWordSubscription = {
     updatedAt: string,
     owner?: string | null,
   } | null,
-};
-
-export type OnDeleteWordSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnDeleteWordSubscription = {

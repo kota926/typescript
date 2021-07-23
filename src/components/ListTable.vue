@@ -48,7 +48,7 @@
                                     outlined
                                     color="red"
                                     class="ml-8 ml-sm-3"
-                                    
+                                    @click="toggleBtn"
                                 >
                                     削除
                                 </v-btn>
@@ -119,7 +119,7 @@
                         <v-btn
                             color="green darken-1"
                             text
-                            
+                            @click="deleteList(list.id)"
                         >
                             削除
                         </v-btn>
@@ -135,7 +135,13 @@
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify';
-    import { listLists } from '../graphql/queries'
+    import Auth from '@aws-amplify/auth'
+    import { listUsers, getUser, getList } from '../graphql/queries'
+    import { createUser, createList, createWord, deleteList } from '../graphql/mutations'
+    import { onDeleteList } from '../graphql/subscriptions'
+    import { GraphQLResult } from '@aws-amplify/api'
+    import { Observable } from 'zen-observable-ts'
+    import { OnDeleteListSubscription } from '../API'
 
     @Component
     export default class ListTable extends Vue {
@@ -149,23 +155,145 @@
         ]
 
         async created() {
-            await this.getLists();
+            await this.createUser()
+            this.fetchUser()
         }
 
-        public async getLists() {
-            const result: any = await API.graphql(graphqlOperation(listLists))
-            console.log(result)
-            this.lists = result.data.listLists.items
+        public async createUser() {
+            const user = await Auth.currentAuthenticatedUser()
+            const userDetails = {
+                id: user.attributes.sub,
+                name: user.username,
+                categories: ['カテゴリー']
+            }
+            console.log(userDetails)
+            const userList: any = await API.graphql(graphqlOperation(listUsers))
+            console.log(userList)
+            const existsUser = userList.data.listUsers.items.some((user) => {
+                return user.id === userDetails.id
+            })
+            if(!existsUser) {
+                const result: any = await API.graphql(graphqlOperation(createUser, {input: userDetails}))
+                console.log(result)
+                const listDetails = {
+                    title: 'タイトル',
+                    userID: this.$store.state.user.attributes.sub,
+                    categories: ['カテゴリー']
+                }
+                console.log(listDetails)
+                const createdList: any = await API.graphql(graphqlOperation(createList, {input: listDetails}))
+                console.log(createdList)
+                const words = [
+                    {
+                        id: "201",
+                        question: "This book is familiar to us.",
+                        answer: "familiar",
+                        english: "familiar",
+                        japanese: "なじみのある",
+                        translation: "この本はおなじみである。"
+                    },
+                    {
+                        id: "202",
+                        question: "I am happy with the result.",
+                        answer: "result",
+                        english: "result",
+                        japanese: "結果",
+                        translation: "結果に満足している。"
+                    },
+                    {
+                        id: "203",
+                        question: "This problem is suitable for class discussion.",
+                        answer: "suitable",
+                        english: "suitable",
+                        japanese: "適した",
+                        translation: "この問題はクラス討論にふさわしい。"
+                    },
+                    {
+                        id: "204",
+                        question: "He couldn't accept the news.",
+                        answer: "accept",
+                        english: "accept",
+                        japanese: "受け入れる",
+                        translation: "彼はそのニュースを受け入れられなかった。"
+                    },
+                    {
+                        id: "205",
+                        question: "Sales increased last month.",
+                        answer: "increased",
+                        english: "increase",
+                        japanese: "増える",
+                        translation: "先月は売上が増えた。"
+                    },
+                    {
+                        id: "206",
+                        question: "Lack of care was the cause of his death.",
+                        answer: "cause",
+                        english: "cause",
+                        japanese: "原因",
+                        translation: "世話をしなかったのが彼の死の原因だった。"
+                    },
+                    {
+                        id: "207",
+                        question: "You look similar to a soccer player.",
+                        answer: "similar",
+                        english: "similar",
+                        japanese: "似ている",
+                        translation: "サッカー選手に似てますね。"
+                    },
+                    {
+                        id: "208",
+                        question: "She adapts to new things quickly.",
+                        answer: "adapts",
+                        english: "adapt",
+                        japanese: "適応する",
+                        translation: "彼女は新しいことにすぐ適応する。"
+                    },
+                    {
+                        id: "209",
+                        question: "We are facing a political crisis",
+                        answer: "political",
+                        english: "political",
+                        japanese: "政治の",
+                        translation: "私達は政治的危機に直面している。"
+                    },
+                    {
+                        id: "210",
+                        question: "Are you serious?",
+                        answer: "serious",
+                        english: "serious",
+                        japanese: "真面目な、本気の",
+                        translation: "本気なの？"
+                    },
+                ]
+                words.forEach(async (word) => {
+                    const wordDetails = {
+                    listID: createdList.data.createList.id,
+                    question: word.question,
+                    answer: word.answer,
+                    english: word.english,
+                    japanese: word.japanese,
+                    translation: word.translation
+                    }
+                    const createdWord: any = await API.graphql(graphqlOperation(createWord, {input: wordDetails}))
+                    console.log(createdWord)
+                })
+            }
         }
 
-        // public async create() {
-        //     const result: any = await API.graphql(graphqlOperation())
-        // }
+        public async fetchUser() {
+            const user: any = await API.graphql(graphqlOperation(getUser, {id: this.$store.state.user.attributes.sub}))
+            console.log("fetchUser")
+            console.log(user)
+            this.lists = user.data.getUser.lists.items
+        }
 
-        toCorrect(item_id) {
-            this.$store.commit('changeCurrentID', item_id)
+        async toCorrect(item_id: string) {
+            const list: any = await API.graphql(graphqlOperation(getList, {id: item_id}))
+            console.log(list)
+            this.$store.commit('changeCurrentList', list.data.getList)
             this.$router.push('List')
         }
+        
         toggleBtn() {
             if(this.dialog) {
                 this.dialog = false
@@ -173,6 +301,38 @@
                 this.dialog = true
             }
         }
+
+        confirm() {
+            this
+        }
+
+        async deleteList(item_id) {
+            const deletedList = await API.graphql(graphqlOperation(deleteList, {input: {id: item_id}}))
+            console.log(deletedList)
+            this.fetchUser
+        }
+        // subscribeDeleteList() {
+        //     const subscription: any = API.graphql(graphqlOperation(onDeleteList)) as Observable<OnDeleteListSubscription>
+        //     subscription.subscribe({
+        //         next: (result) => {
+        //             console.log(result)
+        //             this.fetchUser
+        //         },
+        //         error: (error) => {
+        //             console.log(error)
+        //             subscription.unsubscribe()
+        //             subscription.subscribe({
+        //                 next: (result) => {
+        //                     console.log('second')
+        //                     this.fetchUser
+        //                 },
+        //                 error: (error) => {
+        //                     console.log(error)
+        //                 }
+        //             })
+        //         }
+        //     })
+        // }
     }
 </script>
 

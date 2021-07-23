@@ -2,7 +2,7 @@
     <v-container>
         <v-row dense>
             <v-col
-                v-for="(item, key) in words" v-bind:key="key"
+                v-for="(item, key) in fetchWords" v-bind:key="key"
                 cols="12"
                 lg="6"
             >
@@ -30,7 +30,7 @@
                             <v-btn
                                 outlined
                                 color="red"
-                                
+                                @click="deleteWord(item.id)"
                                 class="mr-2"
                             >
                                 削除
@@ -161,6 +161,13 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import { API, graphqlOperation } from 'aws-amplify';
+    import { searchWords } from '../graphql/queries';
+    import { onCreateWord } from '../graphql/subscriptions'
+    import { deleteWord } from '../graphql/mutations'
+    import { Observable } from 'zen-observable-ts'
+    import { GraphQLResult } from '@aws-amplify/api'
+    import { SearchWordsQuery, SearchWordsQueryVariables, OnCreateWordSubscription } from '../API'
 
     @Component
     export default class WordTable extends Vue {
@@ -171,89 +178,51 @@
         english = ""
         japanese = ""
         translation = ""
-        words = [
-            {
-                        id: "201",
-                        question: "This book is familiar to us.",
-                        answer: "familiar",
-                        english: "familiar",
-                        japanese: "なじみのある",
-                        translation: "この本はおなじみである。"
-                    },
-                    {
-                        id: "202",
-                        question: "I am happy with the result.",
-                        answer: "result",
-                        english: "result",
-                        japanese: "結果",
-                        translation: "結果に満足している。"
-                    },
-                    {
-                        id: "203",
-                        question: "This problem is suitable for class discussion.",
-                        answer: "suitable",
-                        english: "suitable",
-                        japanese: "適した",
-                        translation: "この問題はクラス討論にふさわしい。"
-                    },
-                    {
-                        id: "204",
-                        question: "He couldn't accept the news.",
-                        answer: "accept",
-                        english: "accept",
-                        japanese: "受け入れる",
-                        translation: "彼はそのニュースを受け入れられなかった。"
-                    },
-                    {
-                        id: "205",
-                        question: "Sales increased last month.",
-                        answer: "increased",
-                        english: "increase",
-                        japanese: "増える",
-                        translation: "先月は売上が増えた。"
-                    },
-                    {
-                        id: "206",
-                        question: "Lack of care was the cause of his death.",
-                        answer: "cause",
-                        english: "cause",
-                        japanese: "原因",
-                        translation: "世話をしなかったのが彼の死の原因だった。"
-                    },
-                    {
-                        id: "207",
-                        question: "You look similar to a soccer player.",
-                        answer: "similar",
-                        english: "similar",
-                        japanese: "似ている",
-                        translation: "サッカー選手に似てますね。"
-                    },
-                    {
-                        id: "208",
-                        question: "She adapts to new things quickly.",
-                        answer: "adapts",
-                        english: "adapt",
-                        japanese: "適応する",
-                        translation: "彼女は新しいことにすぐ適応する。"
-                    },
-                    {
-                        id: "209",
-                        question: "We are facing a political crisis",
-                        answer: "political",
-                        english: "political",
-                        japanese: "政治の",
-                        translation: "私達は政治的危機に直面している。"
-                    },
-                    {
-                        id: "210",
-                        question: "Are you serious?",
-                        answer: "serious",
-                        english: "serious",
-                        japanese: "真面目な、本気の",
-                        translation: "本気なの？"
-                    },
-        ]
 
+        get fetchWords() {
+            // this.getList()
+            // this.subscribeWord()
+            return this.$store.state.currentList.words.items
+        }
+
+        // public async getList(): Promise<void> {
+        //     const querySort = {
+        //         filter: {
+        //             listID: { eq: this.$store.state.currentListID }
+        //         },
+        //         sort: {
+        //             field: "createdAt",
+        //             direction: "desc"
+        //         }
+        //     }
+        //     console.log(querySort)
+        //     const list: any = await API.graphql(graphqlOperation(searchWords, querySort));
+        //     console.log(list)
+        //     console.log(list.data.searchWords.items)
+        //     this.words = list.data.searchWords.items
+        // }
+
+        // subscribeWord() {
+        //     const subscription = API.graphql(graphqlOperation(onCreateWord)) as Observable<OnCreateWordSubscription>
+        //     subscription.subscribe({
+        //         next: (result) => {
+        //             console.log(result)
+        //             this.getList()
+        //         },
+        //         error: (error) => {
+        //             console.log(error)
+        //             subscription.subscribe({
+        //                 next: (result) => {
+        //                     console.log(result)
+        //                     this.getList
+        //                 },
+        //                 error: (error) => {
+        //                     console.log(error)
+        //                 }
+        //             })
+        //         }
+        //     })
+        // }
         get trimedQuestion() {
             return this.question.trim()
         }
@@ -268,6 +237,13 @@
         }
         get trimedTranslation() {
             return this.translation.trim()
+        }
+
+        async deleteWord(item_id) {
+            const deletedWord = await API.graphql(graphqlOperation(deleteWord, {input: {id: item_id}}))
+            console.log(deletedWord)
+            
+            this.$store.commit('deleteWord', item_id)
         }
     }
 </script>
