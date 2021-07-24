@@ -1,8 +1,23 @@
 <template>
+<div>
+    <v-system-bar
+        color="grey darken-4"
+        dark
+        ></v-system-bar>
+
+        <v-app-bar
+        dark
+        color="blue-grey darken-4"
+        min-height="60"
+        >
+            <v-toolbar-title
+                class="ml-sm-10">カスタム英文帳
+            </v-toolbar-title>
+        </v-app-bar>
     <v-container>
-        <h1>サインイン</h1>
         <amplify-authenticator></amplify-authenticator>
     </v-container>
+</div>
 </template>
 
 <script lang="ts">

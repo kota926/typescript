@@ -65,7 +65,7 @@
                                 <v-btn
                                     outlined
                                     color="indigo"
-                                    
+                                    @click="toBlank(list.id)"
                                 >
                                     空欄補充
                                 </v-btn>
@@ -73,14 +73,14 @@
                                     outlined
                                     color="indigo"
                                     class="mx-sm-3"
-                                    
+                                    @click="toArrange(list.id)"
                                 >
                                     並べ替え
                                 </v-btn>
                                 <v-btn
                                     outlined
                                     color="indigo"
-                                   
+                                   @click="toTranscription(list.id)"
                                 >
                                     書き取り
                                 </v-btn>
@@ -306,28 +306,19 @@
             })
             this.dialog = false
         }
-        // subscribeDeleteList() {
-        //     const subscription: any = API.graphql(graphqlOperation(onDeleteList)) as Observable<OnDeleteListSubscription>
-        //     subscription.subscribe({
-        //         next: (result) => {
-        //             console.log(result)
-        //             this.fetchUser
-        //         },
-        //         error: (error) => {
-        //             console.log(error)
-        //             subscription.unsubscribe()
-        //             subscription.subscribe({
-        //                 next: (result) => {
-        //                     console.log('second')
-        //                     this.fetchUser
-        //                 },
-        //                 error: (error) => {
-        //                     console.log(error)
-        //                 }
-        //             })
-        //         }
-        //     })
-        // }
+        
+        toBlank(id) {
+            this.$store.commit('changeCurrentListID', id)
+            this.$router.push('Blank')
+        }
+        toArrange(id) {
+            this.$store.commit('changeCurrentListID', id)
+            this.$router.push('Arrangement')
+        }
+        toTranscription(id) {
+            this.$store.commit('changeCurrentListID', id)
+            this.$router.push('Transcription')
+        }
     }
 </script>
 

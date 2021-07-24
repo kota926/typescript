@@ -7,7 +7,9 @@ Vue.use(Vuex)
 const option = {
   reducer: state => ({
     currentListID: state.currentListID,
-    userID: state.userID
+    userID: state.userID,
+    currentIndex: state.currentIndex,
+    tiem: state.time
   }),
 }
 
@@ -42,6 +44,8 @@ export default new Vuex.Store({
     userID: null,
     currentListID: null,
     currentList: {} as list,
+    currentIndex: 0,
+    time: 40,
     // signupUser: {
     //   id: "",
     //   name: "",
@@ -87,6 +91,15 @@ export default new Vuex.Store({
       listWords[index].english= word.english
       listWords[index].japanese = word.japanese
       listWords[index].translation = word.translation
+    },
+    increaseIndex(state) {
+      state.currentIndex++
+    },
+    resetIndex(state) {
+      state.currentIndex = 0
+    },
+    saveConfig(state, info) {
+      state.time = info.time
     }
   },
   actions: {

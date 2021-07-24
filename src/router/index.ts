@@ -30,7 +30,26 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/List.vue'),
     meta: { requireAuth: true},
-  }
+  },
+  {
+    path: '/blank',
+    name: 'Blank',
+    component: () => import( '../views/Blank.vue'),
+    meta: { requireAuth: true},
+  },
+  {
+    path: '/transcription',
+    name: 'Transcription',
+    component: () => import( '../views/Transcription.vue'),
+    meta: { requireAuth: true},
+  },
+  {
+    path: '/arrangement',
+    name: 'Arrangement',
+    component: () => import( '../views/Arrangement.vue'),
+    meta: { requireAuth: true},
+  },
+
 ]
 
 const router = new VueRouter({

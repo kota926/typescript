@@ -260,13 +260,6 @@
         }
 
         passCategories() {
-            // const getUserCategories = `
-            //     query GetUserCategories($id: ID!) {
-            //         getUserCategories(id: $id) {
-            //             categories
-            //         }
-            //     }
-            // `;
             const user: any = API.graphql(graphqlOperation(getUser, {id: this.$store.state.userID}))
             console.log(user)
             user.then((result) => {
@@ -330,8 +323,24 @@
                 id: this.$store.state.userID,
                 categories: this.categories
             }
-            const deletedUser = await API.graphql(graphqlOperation(updateUser, {input: userDetails}))
+            const deletedUser: any = await API.graphql(graphqlOperation(updateUser, {input: userDetails}))
             console.log(deletedUser)
+            const lists = deletedUser.data.updateUser.lists.items
+            lists.forEach(async (list) => {
+                const index = list.categories.findIndex((category) => {
+                    return category === this.deletedCategory
+                })
+                
+                if(index !== -1) {
+                    list.categories.splice(index, 1)
+                    const details = {
+                        id: list.id,
+                        categories: list.categories
+                    }
+                    const newList = await API.graphql(graphqlOperation(updateList, {input: details}))
+                    console.log(newList)
+                }
+            });
         }
 
         toHome() {
