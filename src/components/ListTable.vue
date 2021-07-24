@@ -166,7 +166,7 @@
                 const result: any = await API.graphql(graphqlOperation(createUser, {input: userDetails}))
                 console.log(result)
                 const listDetails = {
-                    title: 'タイトル',
+                    title: 'サンプル',
                     userID: this.$store.state.user.attributes.sub,
                     categories: ['カテゴリー']
                 }
