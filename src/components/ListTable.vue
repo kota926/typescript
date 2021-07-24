@@ -145,8 +145,10 @@
         lists = []
 
         async created() {
+            this.$store.commit('changeLoading', true)
             await this.createUser()
             this.fetchUser()
+            this.$store.commit('changeLoading', false)
         }
 
         public async createUser() {

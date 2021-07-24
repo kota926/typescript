@@ -46,6 +46,7 @@ export default new Vuex.Store({
     currentList: {} as list,
     currentIndex: 0,
     time: 40,
+    loading: false,
     // signupUser: {
     //   id: "",
     //   name: "",
@@ -100,6 +101,9 @@ export default new Vuex.Store({
     },
     saveConfig(state, info) {
       state.time = info.time
+    },
+    changeLoading(state, boolean) {
+      state.loading = boolean
     }
   },
   actions: {

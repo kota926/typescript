@@ -164,6 +164,13 @@
                     </template>
                 </v-col>
             </v-row>
+            <v-progress-linear
+                :active="loading"
+                :indeterminate="loading"
+                absolute
+                bottom
+                color="cyan"
+            ></v-progress-linear>
         </v-app-bar>
         <slot />
         <v-container class="d-flex justify-center">
@@ -243,6 +250,10 @@
                 console.log(result)
                 this.list = result.data.getList
             })
+        }
+
+        get loading() {
+            return this.$store.state.loading
         }
 
         get trimedTitle() {

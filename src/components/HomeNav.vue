@@ -25,6 +25,13 @@
             <v-toolbar-title
                 class="ml-sm-4 ml-lg-8">カスタム英文帳
             </v-toolbar-title>
+            <v-progress-linear
+                :active="loading"
+                :indeterminate="loading"
+                absolute
+                bottom
+                color="cyan"
+            ></v-progress-linear>
         </v-app-bar>
         <slot />
         <v-row
@@ -112,7 +119,12 @@
         drawer = false
         dialog = false
 
+        get loading() {
+            return this.$store.state.loading
+        }
+
         async addList() {
+            this.$store.commit('changeLoading', true)
             const listDetails = {
                 title: 'タイトル',
                 userID: this.$store.state.user.attributes.sub,
