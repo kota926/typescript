@@ -160,14 +160,10 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue, Watch } from 'vue-property-decorator';
+    import { Component, Vue } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify';
     import { getList } from '../graphql/queries';
-    import { onCreateWord, onUpdateWord } from '../graphql/subscriptions'
     import { deleteWord, updateWord } from '../graphql/mutations'
-    import { Observable } from 'zen-observable-ts'
-    import { GraphQLResult } from '@aws-amplify/api'
-    import { GetListQuery, OnUpdateWordSubscription } from '../API'
 
     @Component
     export default class WordTable extends Vue {
@@ -185,72 +181,12 @@
             const list: any = await API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
             console.log(list)
             this.$store.commit('changeCurrentList', list.data.getList)
-            // console.log('commited shageCurrentList')
-            // console.log(this.$store.state.currentList.words.items)
             this.fetchWord()
         }
 
         fetchWord() {
             this.words = this.$store.state.currentList.words.items
         }
-
-        // @Watch('words')
-        // onChangeWord(next, pre) {
-        //     console.log(next)
-        //     console.log(pre)
-        //     this.words = this.$store.state.currentList.words.items
-        // }
-
-        // public async getList(): Promise<void> {
-        //     const querySort = {
-        //         filter: {
-        //             listID: { eq: this.$store.state.currentListID }
-        //         },
-        //         sort: {
-        //             field: "createdAt",
-        //             direction: "desc"
-        //         }
-        //     }
-        //     console.log(querySort)
-        //     const list: any = await API.graphql(graphqlOperation(searchWords, querySort));
-        //     console.log(list)
-        //     console.log(list.data.searchWords.items)
-        //     this.words = list.data.searchWords.items
-        // }
-
-        // subscribeWord() {
-        //     const subscription = API.graphql(graphqlOperation(onCreateWord)) as Observable<OnCreateWordSubscription>
-        //     subscription.subscribe({
-        //         next: (result) => {
-        //             console.log(result)
-        //             this.getList()
-        //         },
-        //         error: (error) => {
-        //             console.log(error)
-        //             subscription.subscribe({
-        //                 next: (result) => {
-        //                     console.log(result)
-        //                     this.getList
-        //                 },
-        //                 error: (error) => {
-        //                     console.log(error)
-        //                 }
-        //             })
-        //         }
-        //     })
-        // }
-
-        // onUpdateSubscribeWord() {
-        //     const subscription = API.graphql(graphqlOperation(onUpdateWord)) as Observable<OnUpdateWordSubscription>
-        //     subscription.subscribe({
-        //         next: (result) => {
-        //             console.log(result)
-        //         },
-        //         error: (error) => {
-        //             console.log(error);
-        //         }
-        //     })
-        // }
 
         get canAddWord() {
             if(this.trimedQuestion !== '' && this.trimedAnswer !== '') {

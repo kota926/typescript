@@ -136,12 +136,8 @@
     import { Component, Vue } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify';
     import Auth from '@aws-amplify/auth'
-    import { listUsers, getUser, getList } from '../graphql/queries'
+    import { listUsers, getUser } from '../graphql/queries'
     import { createUser, createList, createWord, deleteList } from '../graphql/mutations'
-    import { onDeleteList } from '../graphql/subscriptions'
-    import { GraphQLResult } from '@aws-amplify/api'
-    import { Observable } from 'zen-observable-ts'
-    import { OnDeleteListSubscription } from '../API'
 
     @Component
     export default class ListTable extends Vue {

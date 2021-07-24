@@ -294,10 +294,7 @@
             console.log(updatedList)
             const list: any = await API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
             console.log(list)
-            // list.then((result) => {
-            //     console.log(result)
-            //     this.list = result.data.getList
-            // })
+
             this.list = list.data.getList
             this.dialog = false
         }
@@ -347,13 +344,13 @@
             this.$router.push('/home')
         }
         toTest() {
-            this.$router.push('Test')
+            this.$router.push('Blank')
         }
         toArrange() {
-            this.$router.push('Arrange')
+            this.$router.push('Arrangement')
         }
         toTranscribe() {
-            this.$router.push('Transcribe')
+            this.$router.push('Transcription')
         }
     }
 </script>

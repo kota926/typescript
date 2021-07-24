@@ -192,13 +192,6 @@
             return this.$store.state.currentIndex
         }
         
-        // get correctArray() {
-        //     const q = this.currentWord.question
-        //     if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
-        //         return q.slice(0, -1).split(" ")
-        //     }
-        //     return q.split(' ')
-        // }
         passWord(item: string) {
             this.yourAnswer.push(item)
             const index = this.questionArray.findIndex((word) => {

@@ -173,30 +173,12 @@ export default class FillBlank extends Vue {
     get trimedAnswer() {
         return this.yourAnswer.trim()
     }
-
-    // get last() {
-    //     const q = this.currentWord.question
-    //     if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
-    //         return q.slice(-1)
-    //     }
-    //     return ''
-    // }
-
-    // get matchedAnswer() {
-    //     if(this.last !== '') {
-    //         return this.currentWord.question.slice(0, -1)
-    //     }
-    //     return this.currentWord.question
-    // }
     
     skip() {
             this.yourAnswer = ""
             this.dialog = true
     }
     
-    // mounted() {
-    //     this.$refs.answer.focus()
-    // }
 }
 </script>
 
