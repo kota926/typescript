@@ -65,7 +65,13 @@
                     <v-list-item-title>初期化</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <amplify-sign-out></amplify-sign-out>
+                    <v-btn
+                    @click="signOut"
+                    color="primary"
+                    outlined
+                    >
+                    ログアウト
+                    </v-btn>
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
@@ -113,6 +119,7 @@
     import { Component, Vue } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify'
     import { createList } from '../graphql/mutations'
+    import { Auth } from 'aws-amplify'
 
     @Component
     export default class HomeNAv extends Vue {
@@ -140,6 +147,14 @@
         clear() {
             this.dialog = false
             window.localStorage.removeItem('vuex')
+        }
+
+        signOut() {
+            Auth.signOut().then((data) => {
+                return this.$router.push('/')
+            }).catch((e) => {
+                console.error(e)
+            })
         }
     }
 </script>
