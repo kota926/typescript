@@ -152,22 +152,16 @@
         
         @Watch('list')
         onChangeList(next, pre) {
-            console.log(pre)
-            console.log(next)
             this.currentWord = next.words.items[this.$store.state.currentIndex]
         }
 
         @Watch('currentIndex')
         onChangeIndex(next, pre) {
-            console.log(pre)
-            console.log(next)
             this.currentWord = this.list.words.items[next]
         }
 
         @Watch('currentWord')
         onChangeWord(next, pre) {
-            console.log(pre)
-            console.log(next)
             const q = next.question
             if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
                 this.correctArray = q.slice(0, -1).split(" ")

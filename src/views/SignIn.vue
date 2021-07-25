@@ -125,7 +125,6 @@ export default class SignIn extends Vue {
     public signIn() {
         this.loading = true
         Auth.signIn(this.userName, this.password).then((user) => {
-            console.log(user)
             this.loading = false
             return this.$router.push('Home')
         }).catch((error) => {

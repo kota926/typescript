@@ -245,7 +245,7 @@
 
         created() {
             const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
-            console.log(list)
+            
             list.then((result) => {
                 console.log(result)
                 this.list = result.data.getList
@@ -272,7 +272,7 @@
 
         passCategories() {
             const user: any = API.graphql(graphqlOperation(getUser, {id: this.$store.state.userID}))
-            console.log(user)
+            
             user.then((result) => {
                 this.titleName = this.list.title
                 this.selectedCategories = this.list.categories
@@ -289,7 +289,7 @@
                 id: this.$store.state.userID as string,
                 categories: this.categories
             }
-            console.log(categoryDetails)
+            
             const updatedCategory = await API.graphql({ query: updateUser, variables: {input: categoryDetails}})
             console.log(updatedCategory)
             this.categoryName = ""

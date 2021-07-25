@@ -174,7 +174,6 @@
 
         async addWord() {
             if(this.canAddWord) {
-                console.log(this.$store.state.currentListID)
                 const wordDetails = {
                 listID: this.$store.state.currentListID,
                 question: this.trimedQuestion,
@@ -183,7 +182,7 @@
                 japanese: this.nullJapanese,
                 translation: this.nullTranslation
                 }
-                console.log(wordDetails)
+                
                 const word: any = await API.graphql(graphqlOperation(createWord, {input: wordDetails}))
                 console.log(word)
 

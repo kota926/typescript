@@ -91,6 +91,15 @@
             ></v-text-field>
 
             <v-text-field
+            v-model="email"
+            :rules="emailRules"
+            label="メールアドレス"
+            required
+            outlined
+            disabled
+            ></v-text-field>
+
+            <v-text-field
             v-model="verifyCode"
             label="認証コード"
             required
@@ -190,6 +199,37 @@
             </div>
         </v-card>
         </v-dialog>
+        <v-dialog
+            v-model="warnDialog"
+            persistent
+        >
+        <v-card max-width="450" class="mx-auto">
+            <v-card-title>
+                警告
+            </v-card-title>
+            <v-card-text>
+                認証前にこのページを離れた場合、現在作成しているアカウントはご利用できません。認証を行わずにログインページに戻りますか？
+            </v-card-text>
+            <div class="d-flex justify-end">
+                <v-card-actions>
+                    <v-btn
+                    color="primary"
+                    class="mb-3 mr-4"
+                    outlined
+                    @click="warnDialog = false"
+                    >NO</v-btn>
+                </v-card-actions>
+                <v-card-actions>
+                    <v-btn
+                    color="danger"
+                    class="mb-3 mr-4"
+                    outlined
+                    @click="getOut"
+                    >YES</v-btn>
+                </v-card-actions>
+            </div>
+        </v-card>
+        </v-dialog>
     </v-container>
 </div>
 </template>
@@ -211,6 +251,7 @@ export default class SignUp extends Vue {
     reconfirmDialog = false
     completeDialog = false
     failDialog = false
+    warnDialog = false
     title = 'ユーザーを作成できませんでした'
     message = ""
     loading = false
@@ -258,8 +299,8 @@ export default class SignUp extends Vue {
 
     public userVerify() {
         this.loading = true
-        Auth.confirmSignUp(this.userName, this.verifyCode).then((data) => {
-            console.log(data)
+        const trimedCode = this.verifyCode.trim()
+        Auth.confirmSignUp(this.userName, trimedCode).then((data) => {
             this.loading = false
             this.completeDialog = true
             setTimeout(() => {
@@ -284,6 +325,9 @@ export default class SignUp extends Vue {
                     break
                 case 'CodeDeliveryFailureException' :
                     this.message = '認証コードに送信に失敗しました。'
+                    break
+                case 'InvalidParameterException':
+                    this.message = '不適なコードが入力されました。'
                     break
                 default:
                     this.message = '予期せぬエラーが発生しました。もう一度やりなおしてください。'
@@ -315,6 +359,15 @@ export default class SignUp extends Vue {
     }
 
     toSignIn() {
+        if(this.signUpForm === true) {
+            this.$router.push('/')
+        } else {
+            this.warnDialog = true
+        }
+        
+    }
+
+    getOut() {
         this.$router.push('/')
     }
 

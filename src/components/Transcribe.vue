@@ -105,7 +105,6 @@ export default class FillBlank extends Vue {
     
     created() {
         const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
-        console.log(list)
         list.then((result) => {
             this.list = result.data.getList
             console.log(result)
@@ -141,14 +140,12 @@ export default class FillBlank extends Vue {
     
     @Watch('list')
     onChangeList(next, pre) {
-        console.log(pre)
         console.log(next)
         this.currentWord = next.words.items[this.$store.state.currentIndex]
     }
 
     @Watch('currentIndex')
     onChangeIndex(next, pre) {
-        console.log(pre)
         console.log(next)
         this.currentWord = this.list.words.items[next]
     }

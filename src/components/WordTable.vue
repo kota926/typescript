@@ -180,7 +180,6 @@
             this.$store.commit('changeLoading', true)
             console.log(this.$store.state.currentListID)
             const list: any = await API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
-            console.log(list)
             this.$store.commit('changeCurrentList', list.data.getList)
             this.fetchWord()
             this.$store.commit('changeLoading', false)
@@ -262,9 +261,7 @@
                     japanese: this.nullJapanese,
                     translation: this.nullTranslation
                 }
-                console.log(wordDetails)
                 const word: any = await API.graphql(graphqlOperation(updateWord, {input: wordDetails}))
-                console.log(word)
                 this.$store.commit('correctWord', word.data.updateWord)
                 this.dialog = false
             }

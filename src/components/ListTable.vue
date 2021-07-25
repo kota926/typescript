@@ -158,9 +158,9 @@
                 name: user.username,
                 categories: ['カテゴリー']
             }
-            console.log(userDetails)
+            
             const userList: any = await API.graphql(graphqlOperation(listUsers))
-            console.log(userList)
+            
             const existsUser = userList.data.listUsers.items.some((user) => {
                 return user.id === userDetails.id
             })
@@ -172,7 +172,7 @@
                     userID: this.$store.state.user.attributes.sub,
                     categories: ['カテゴリー']
                 }
-                console.log(listDetails)
+                
                 const createdList: any = await API.graphql(graphqlOperation(createList, {input: listDetails}))
                 console.log(createdList)
                 const words = [
@@ -266,24 +266,19 @@
                     japanese: word.japanese,
                     translation: word.translation
                     }
-                    const createdWord: any = await API.graphql(graphqlOperation(createWord, {input: wordDetails}))
-                    console.log(createdWord)
+                    await API.graphql(graphqlOperation(createWord, {input: wordDetails}))
                 })
             }
         }
 
         public async fetchUser() {
             const user: any = await API.graphql(graphqlOperation(getUser, {id: this.$store.state.user.attributes.sub}))
-            console.log("fetchUser")
             console.log(user)
             this.lists = user.data.getUser.lists.items
         }
 
         async toCorrect(item_id: string) {
             this.$store.commit('changeCurrentListID', item_id)
-            // const list: any = await API.graphql(graphqlOperation(getList, {id: item_id}))
-            // console.log(list)
-            // this.$store.commit('changeCurrentList', list.data.getList)
             this.$router.push('List')
         }
         
@@ -300,7 +295,6 @@
             console.log(deletedList)
             deletedList.then(() => {
                 this.fetchUser()
-                console.log('then')
             })
             this.dialog = false
         }
