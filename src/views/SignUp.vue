@@ -87,6 +87,7 @@
             label="ユーザーネーム"
             required
             outlined
+            disabled
             ></v-text-field>
 
             <v-text-field
@@ -105,6 +106,16 @@
                 outlined
                 >
                 認証
+                </v-btn>
+            </div>
+            <div class="d-flex justify-center ma-10">
+                <v-btn
+                color="blue-gray"
+                class=""
+                @click="resend"
+                outlined
+                >
+                コードを再発行
                 </v-btn>
             </div>
         </v-form>
@@ -127,6 +138,19 @@
             </v-card-title>
             <v-card-text>
                 ご登録いただいたメールアドレスに認証用コードをお送りしました。お次のページにてコードを入力し、認証を完了してください。
+            </v-card-text>
+        </v-card>
+        </v-dialog>
+        <v-dialog
+            v-model="reconfirmDialog"
+            persistent
+        >
+        <v-card max-width="500" class="mx-auto">
+            <v-card-title>
+                再認証
+            </v-card-title>
+            <v-card-text>
+                ご登録いただいたメールアドレスに認証用コードを再度お送りしました。
             </v-card-text>
         </v-card>
         </v-dialog>
@@ -184,6 +208,7 @@ export default class SignUp extends Vue {
     signUpForm = true
     verifyCode = ""
     confirmDialog  = false
+    reconfirmDialog = false
     completeDialog = false
     failDialog = false
     title = 'ユーザーを作成できませんでした'
@@ -264,7 +289,29 @@ export default class SignUp extends Vue {
                     this.message = '予期せぬエラーが発生しました。もう一度やりなおしてください。'
             }
             this.failDialog = true
+            this.loading = false
         })
+    }
+
+    public resend() {
+        Auth.resendSignUp(this.userName).then((result) => {
+            console.log(result)
+            this.reconfirmDialog = true
+            setTimeout(() => {
+                this.reconfirmDialog = false
+            }, 8000)
+        }).catch((error) => {
+            switch(error.code) {
+                case 'CodeDeliveryFailureException': 
+                    this.message = 'コードの送信に失敗しました。'
+                    break
+                default:
+                    this.message = '予期せぬエラーが発生しました。もう一度やり直してください。'
+            }
+            this.title = 'コードの再発行ができませんでした'
+            this.failDialog = true
+        })
+        
     }
 
     toSignIn() {
