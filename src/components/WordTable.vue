@@ -233,14 +233,14 @@
                 return this.trimedTranslation
             }
         }
-
+        // ワードテーブルからワードを削除
         async deleteWord(item_id) {
             const deletedWord = await API.graphql(graphqlOperation(deleteWord, {input: {id: item_id}}))
             console.log(deletedWord)
         
             this.$store.commit('deleteWord', item_id)
         }
-
+        // ワード修正ダイアログにワードの情報を渡す
         passWord(item) {
             this.dialog = true
             this.id = item.id
@@ -250,7 +250,7 @@
             this.japanese = item.japanese
             this.translation = item.translation
         }
-
+        // ワードを修正する
         async correctWord() {
             if(this.canAddWord) {
                 const wordDetails = {

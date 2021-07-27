@@ -262,6 +262,7 @@
         get trimedCategory() {
             return this.categoryName.trim()
         }
+        
         get responsiveBack() {
             if(document.documentElement.clientWidth < 450) {
                 return ''
@@ -270,6 +271,7 @@
             }
         }
 
+        // 情報修正画面を開くと設定画面の情報を更新する
         passCategories() {
             const user: any = API.graphql(graphqlOperation(getUser, {id: this.$store.state.userID}))
             
@@ -282,7 +284,7 @@
             })
             
         }
-
+        // ユーザーが保有するカテゴリー一覧に対して、入力されたカテゴリーを追加する
         async addCategory() {
             this.categories.push(this.trimedCategory)
             const categoryDetails = {
@@ -294,7 +296,7 @@
             console.log(updatedCategory)
             this.categoryName = ""
         }
-
+        // リストの情報を修正する
         async correctInfo() {
             const infoDetails = {
                 id: this.$store.state.currentListID,
@@ -311,9 +313,11 @@
         }
 
         async deleteCategory() {
+            // 今開いているリストにあるカテゴリーの中から消すカテゴリーを見つける
             const listIndex = this.list.categories.findIndex((category) => {
                 return category === this.deletedCategory
             })
+            // データベースにあるこのリストのカテゴリーから選択されたカテゴリーを消す
             if(listIndex !== -1) {
                 this.list.categories.splice(listIndex, 1)
                 const newCategories = {
@@ -323,6 +327,7 @@
                 const updatedList = await API.graphql(graphqlOperation(updateList, {input: newCategories}))
                 console.log(updatedList)
             }
+            // 選択肢から消す
             const userIndex = this.categories.findIndex((category) => {
                 return category === this.deletedCategory
             })
@@ -331,6 +336,7 @@
                 id: this.$store.state.userID,
                 categories: this.categories
             }
+            // ユーザーがここ以外のリストで消されたカテゴリーを選択していた場合、それも消す
             const deletedUser: any = await API.graphql(graphqlOperation(updateUser, {input: userDetails}))
             console.log(deletedUser)
             const lists = deletedUser.data.updateUser.lists.items

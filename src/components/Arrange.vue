@@ -115,14 +115,17 @@
         last = ""
 
         created() {
-        const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
-        console.log(list)
-        list.then((result) => {
-            this.list = result.data.getList
-            console.log(result)
-        })
+            const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
+            console.log(list)
+            list.then((result) => {
+                this.list = result.data.getList
+                // ワードが１単語も登録されてなかったらホームに戻す
+                if(result.data.getList.words.items.length === 0) {
+                    this.$router.push('Home')
+                }
+            })
         }
-
+        // 正解判定
         @Watch('yourAnswer')
         onYourAnswer() {
             if(this.yourAnswer.toString() === this.correctArray.toString()) {
@@ -130,7 +133,7 @@
                 this.dialog = true
             }
         }
-
+        // 正解したら解説ダイアログ見せる
         @Watch('dialog')
         onDialog(val) {
             const nextPage = () => {
@@ -142,6 +145,7 @@
                 this.$store.commit('resetIndex')
                 this.$router.push('List')
             }
+            // 時間が経ったら次の問題へ
             const time = this.$store.state.time * 100
             if(val && this.$store.state.currentIndex < this.list.words.items.length - 1) {
                 setTimeout(nextPage, time)
@@ -159,7 +163,7 @@
         onChangeIndex(next, pre) {
             this.currentWord = this.list.words.items[next]
         }
-
+        // 問題の末尾を取り除く
         @Watch('currentWord')
         onChangeWord(next, pre) {
             const q = next.question
@@ -171,7 +175,7 @@
                 this.last = ''
             }
         }
-
+        // 単語をシャッフルする
         @Watch('correctArray')
         onChangeArray(next) {
             const array = next.concat()
@@ -185,7 +189,7 @@
         get currentIndex() {
             return this.$store.state.currentIndex
         }
-        
+        // クリックした単語を解答に送る
         passWord(item: string) {
             this.yourAnswer.push(item)
             const index = this.questionArray.findIndex((word) => {
@@ -193,6 +197,7 @@
             })
             this.questionArray.splice(index, 1)
         }
+        // クリックした単語を問題に戻す
         removeWord(item) {
             this.questionArray.push(item)
             const index = this.yourAnswer.findIndex((word) => {
@@ -200,6 +205,7 @@
             })
             this.yourAnswer.splice(index, 1)
         }
+        // 問題を飛ばす
         skip() {
                 this.yourAnswer = []
                 this.dialog = true

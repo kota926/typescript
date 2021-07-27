@@ -110,10 +110,13 @@ export default class FillBlank extends Vue {
         console.log(list)
         list.then((result) => {
             this.list = result.data.getList
-            console.log(result)
+            // ワードが１単語も登録されてなかったらホームに戻す
+            if(result.data.getList.words.items.length === 0) {
+                this.$router.push('Home')
+            }
         })
     }
-
+    // 正解判定
     @Watch('yourAnswer')
     onYourAnswer() {
         if(this.yourAnswer === this.currentWord.answer) {
@@ -121,7 +124,7 @@ export default class FillBlank extends Vue {
             this.dialog = true
         }
     }
-
+    // 正解したら解説ダイアログ見せる
     @Watch('dialog')
     onDialog(val) {
         const nextPage = () => {
@@ -150,7 +153,7 @@ export default class FillBlank extends Vue {
     onChangeIndex(next, pre) {
         this.currentWord = this.list.words.items[next]
     }
-
+    // 問題文から正解の単語を抜きっとって、代わりにカッコを入れる
     @Watch('currentWord')
     onChangeWord(next, pre) {
         const question = next.question
@@ -167,10 +170,6 @@ export default class FillBlank extends Vue {
             this.yourAnswer = ""
             this.dialog = true
     }
-    
-    // mounted() {
-    //     this.$refs.answer.focus()
-    // }
 }
 </script>
 

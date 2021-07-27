@@ -130,6 +130,7 @@
             return this.$store.state.loading
         }
 
+        // プラスボタンを押すとリストを追加し、リストページに飛ぶ
         async addList() {
             this.$store.commit('changeLoading', true)
             const listDetails = {

@@ -151,6 +151,7 @@
             this.$store.commit('changeLoading', false)
         }
 
+        // 初めてログインする際、初期データをデータベースにcreateする
         public async createUser() {
             const user = await Auth.currentAuthenticatedUser()
             const userDetails = {
@@ -270,18 +271,18 @@
                 })
             }
         }
-
+        // インスタンス生成後ユーザーが持っているリスト一覧を取得する
         public async fetchUser() {
             const user: any = await API.graphql(graphqlOperation(getUser, {id: this.$store.state.user.attributes.sub}))
             console.log(user)
             this.lists = user.data.getUser.lists.items
         }
-
+        // リストページに飛ぶ
         async toCorrect(item_id: string) {
             this.$store.commit('changeCurrentListID', item_id)
             this.$router.push('List')
         }
-        
+        // 戻るときダイアログを閉じる
         toggleBtn() {
             if(this.dialog) {
                 this.dialog = false
@@ -289,7 +290,7 @@
                 this.dialog = true
             }
         }
-
+        // リストを消す
         deleteList(item_id) {
             const deletedList: any = API.graphql(graphqlOperation(deleteList, {input: {id: item_id}}))
             console.log(deletedList)
@@ -298,15 +299,17 @@
             })
             this.dialog = false
         }
-        
+        // 空欄補充問題へ移動する
         toBlank(id) {
             this.$store.commit('changeCurrentListID', id)
             this.$router.push('Blank')
         }
+        // 並び替え問題へ移動する
         toArrange(id) {
             this.$store.commit('changeCurrentListID', id)
             this.$router.push('Arrangement')
         }
+        // 書き取り問題に移動する
         toTranscription(id) {
             this.$store.commit('changeCurrentListID', id)
             this.$router.push('Transcription')

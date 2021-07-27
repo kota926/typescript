@@ -107,10 +107,13 @@ export default class FillBlank extends Vue {
         const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
         list.then((result) => {
             this.list = result.data.getList
-            console.log(result)
+            // ワードが１単語も登録されてなかったらホームに戻す
+            if(result.data.getList.words.items.length === 0) {
+                this.$router.push('Home')
+            }
         })
     }
-
+    // 正解判定
     @Watch('yourAnswer')
     onYourAnswer() {
         if(this.trimedAnswer === this.matchedAnswer) {
@@ -118,7 +121,7 @@ export default class FillBlank extends Vue {
             this.dialog = true
         }
     }
-
+    // 正解したら解説ダイアログ見せる
     @Watch('dialog')
     onDialog(val) {
         const nextPage = () => {
@@ -149,7 +152,7 @@ export default class FillBlank extends Vue {
         console.log(next)
         this.currentWord = this.list.words.items[next]
     }
-
+    // 問題文の末尾を取り除く
     @Watch('currentWord')
     onChangeWord(next) {
         const q = next.question

@@ -127,6 +127,7 @@
         passConfig() {
             this.time = this.$store.state.time
         }
+        // 解説表示時間をストアに保存
         saveConfig() {
             this.dialog = false
             const config = {

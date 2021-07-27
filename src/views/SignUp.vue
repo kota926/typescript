@@ -266,7 +266,7 @@ export default class SignUp extends Vue {
         (v: string): boolean | string => !!v || 'パスワードは必須です',
         (v: string): boolean | string => v.length >= 8 || '8文字以上が必要です',
     ]
-    public signUp() {
+    public signUp(): void {
         this.loading = true
         Auth.signUp(this.userName, this.password, this.email).then((user) => {
             console.log(user)
@@ -297,7 +297,7 @@ export default class SignUp extends Vue {
         })
     }
 
-    public userVerify() {
+    public userVerify(): void {
         this.loading = true
         const trimedCode = this.verifyCode.trim()
         Auth.confirmSignUp(this.userName, trimedCode).then((data) => {

@@ -128,6 +128,7 @@
         translation = ""
         dialog = false
 
+        // ワードを追加できるか判定
         get canAddWord() {
             if(this.trimedQuestion !== '' && this.trimedAnswer !== '') {
                 return this.trimedQuestion.includes(this.trimedAnswer)
@@ -182,10 +183,10 @@
                 japanese: this.nullJapanese,
                 translation: this.nullTranslation
                 }
-                
+                // ワードをデータベースに追加
                 const word: any = await API.graphql(graphqlOperation(createWord, {input: wordDetails}))
                 console.log(word)
-
+                // 画面更新のために vuex に追加したワード保存
                 this.$store.commit('unshiftWord', word.data.createWord)
 
                 this.question = ""
