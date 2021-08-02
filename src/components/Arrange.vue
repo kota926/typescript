@@ -193,10 +193,6 @@
         // クリックした単語を解答に送る、disableにする
         passWord(item: string, key: number) {
             this.yourAnswer.push(item)
-            // const index = this.questionArray.findIndex((word) => {
-            //     return word === item
-            // })
-            // this.questionArray.splice(index, 1)
             this.selectedKey.push(key)
         }
 
@@ -219,6 +215,7 @@
         // 問題を飛ばす
         skip() {
                 this.yourAnswer = []
+                this.selectedKey = []
                 this.dialog = true
         }
     }

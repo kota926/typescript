@@ -58,7 +58,12 @@
             class="drawer"
         >
             <v-list>
-                <v-list-item @click="dialog = true" class="ml-3 mt-8">
+                <v-list-item>
+                    <v-chip label outlined class="text-body-1">
+                        {{ name }}
+                    </v-chip>
+                </v-list-item>
+                <v-list-item @click="dialog = true">
                     <v-list-item-icon>
                         <v-icon>mdi-delete</v-icon>
                     </v-list-item-icon>
@@ -125,6 +130,12 @@
     export default class HomeNAv extends Vue {
         drawer = false
         dialog = false
+        name = ""
+
+        async created() {
+            const user = await Auth.currentAuthenticatedUser()
+            this.name = user.username
+        }
 
         get loading() {
             return this.$store.state.loading

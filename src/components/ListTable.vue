@@ -180,7 +180,7 @@
                     {
                         id: "201",
                         question: "This book is familiar to us.",
-                        answer: "familiar",
+                        answerIndex: [3],
                         english: "familiar",
                         japanese: "なじみのある",
                         translation: "この本はおなじみである。"
@@ -188,7 +188,7 @@
                     {
                         id: "202",
                         question: "I am happy with the result.",
-                        answer: "result",
+                        answerIndex: [5],
                         english: "result",
                         japanese: "結果",
                         translation: "結果に満足している。"
@@ -196,7 +196,7 @@
                     {
                         id: "203",
                         question: "This problem is suitable for class discussion.",
-                        answer: "suitable",
+                        answerIndex: [3],
                         english: "suitable",
                         japanese: "適した",
                         translation: "この問題はクラス討論にふさわしい。"
@@ -204,7 +204,7 @@
                     {
                         id: "204",
                         question: "He couldn't accept the news.",
-                        answer: "accept",
+                        answerIndex: [2],
                         english: "accept",
                         japanese: "受け入れる",
                         translation: "彼はそのニュースを受け入れられなかった。"
@@ -212,7 +212,7 @@
                     {
                         id: "205",
                         question: "Sales increased last month.",
-                        answer: "increased",
+                        answerIndex: [1],
                         english: "increase",
                         japanese: "増える",
                         translation: "先月は売上が増えた。"
@@ -220,7 +220,7 @@
                     {
                         id: "206",
                         question: "Lack of care was the cause of his death.",
-                        answer: "cause",
+                        answerIndex: [5],
                         english: "cause",
                         japanese: "原因",
                         translation: "世話をしなかったのが彼の死の原因だった。"
@@ -228,7 +228,7 @@
                     {
                         id: "207",
                         question: "You look similar to a soccer player.",
-                        answer: "similar",
+                        answerIndex: [2],
                         english: "similar",
                         japanese: "似ている",
                         translation: "サッカー選手に似てますね。"
@@ -236,7 +236,7 @@
                     {
                         id: "208",
                         question: "She adapts to new things quickly.",
-                        answer: "adapts",
+                        answerIndex: [1],
                         english: "adapt",
                         japanese: "適応する",
                         translation: "彼女は新しいことにすぐ適応する。"
@@ -244,7 +244,7 @@
                     {
                         id: "209",
                         question: "We are facing a political crisis",
-                        answer: "political",
+                        answerIndex: [4],
                         english: "political",
                         japanese: "政治の",
                         translation: "私達は政治的危機に直面している。"
@@ -252,7 +252,7 @@
                     {
                         id: "210",
                         question: "Are you serious?",
-                        answer: "serious",
+                        answerIndex: [2],
                         english: "serious",
                         japanese: "真面目な、本気の",
                         translation: "本気なの？"
@@ -262,7 +262,7 @@
                     const wordDetails = {
                     listID: createdList.data.createList.id,
                     question: word.question,
-                    answer: word.answer,
+                    answerIndex: word.answerIndex,
                     english: word.english,
                     japanese: word.japanese,
                     translation: word.translation
