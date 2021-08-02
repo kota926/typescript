@@ -30,7 +30,7 @@ type Word
   listID: ID!
   list: List @connection(fields: ["listID"])
   question: String!
-  answer: String!
+  answerIndex: [Int]
   english: String
   japanese: String
   translation: String

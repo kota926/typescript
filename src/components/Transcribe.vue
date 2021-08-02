@@ -37,9 +37,6 @@
                         elevation="10"
                         class="card"
                     >
-                        <v-card-title>
-                            解答：<div class="text-h5 text-sm-h4">{{ currentWord.answer }}</div>
-                        </v-card-title>
                         <div class="d-md-flex align-center">
                             <v-card-title>
                                 英語：<div class="text-h5 text-sm-h4">{{ currentWord.english }}</div>
@@ -67,7 +64,7 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { getList } from '../graphql/queries'
 
 interface word {
-    answer: string;
+    answerIndex: string;
     createdAt: string;
     english: string;
     id: string;

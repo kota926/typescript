@@ -73,21 +73,16 @@
                         placeholder="問題の英文を記入"
                         v-model="question"
                     ></v-textarea>
+                    <v-container class="d-flex flex-wrap justify-start">
+                        <v-btn v-for="(item, key) in questionArray" v-bind:key="key"
+                            class="mx-2 my-1"
+                            style="text-transform: none"
+                            @click="passKey(key)"
+                            :class="{ primary : selectedItem(key) }"
+                        >{{ item }}
+                        </v-btn>
+                    </v-container>
                     <v-row>
-                        <v-col
-                        cols="12"
-                        sm="12"
-                        md="4"
-                        class="mb-n10"
-                        >
-                        <v-text-field
-                            label="解答"
-                            placeholder="空欄にしたい単語（文と完全一致）"
-                            outlined
-                            clearable
-                            v-model="answer"
-                        ></v-text-field>
-                        </v-col>
                         <v-col
                         cols="12"
                         sm="6"
@@ -160,7 +155,7 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import { Component, Vue, Watch } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify';
     import { getList } from '../graphql/queries';
     import { deleteWord, updateWord } from '../graphql/mutations'
@@ -170,7 +165,7 @@
         dialog = false
         id = ""
         question = ""
-        answer = ""
+        answerIndex = [] as number[]
         english = ""
         japanese = ""
         translation = ""
@@ -190,8 +185,8 @@
         }
 
         get canAddWord() {
-            if(this.trimedQuestion !== '' && this.trimedAnswer !== '') {
-                return this.trimedQuestion.includes(this.trimedAnswer)
+            if(this.trimedQuestion !== '' && this.answerIndex !== []) {
+                return true
             } else {
                 return false
             }
@@ -199,9 +194,6 @@
 
         get trimedQuestion() {
             return this.question.trim()
-        }
-        get trimedAnswer() {
-            return this.answer.trim()
         }
         get trimedEnglish() {
             return this.english.trim()
@@ -214,7 +206,7 @@
         }
         get nullEnglish() {
             if(this.trimedEnglish === "") {
-                return this.trimedAnswer
+                return "未記入"
             } else {
                 return this.trimedEnglish
             }
@@ -245,18 +237,58 @@
             this.dialog = true
             this.id = item.id
             this.question = item.question
-            this.answer = item.answer
+            this.answerIndex = item.answerIndex
             this.english = item.english
             this.japanese = item.japanese
             this.translation = item.translation
         }
+        @Watch('answerIndex')
+        onChangeWords(next) {
+            console.log(next)
+        }
+        get questionArray() {
+            const space = ' ' + ','
+            const q = this.trimedQuestion.replaceAll(',', space)
+            if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
+                return q.slice(0, -1).split(' ')
+            }
+            return q.split(' ') 
+        }
+        get selectedItem() {
+            return (key) => {
+                return this.answerIndex.some((k) => k === key)
+            }
+        }
+
+        passKey(key) {
+            const findKey = this.answerIndex.findIndex((item) => {
+                return item === key
+            })
+            if(findKey === -1) {
+                this.answerIndex.push(key)
+                this.answerIndex.sort((a, b) => a - b)
+            } else {
+                this.answerIndex.splice(findKey, 1)
+            }
+
+            let answer = this.questionArray[this.answerIndex[0]]
+            const array = this.answerIndex
+            const keyArray = this.answerIndex
+            const question = this.questionArray
+            for(let i = 1; i < array.length; i++) {
+                const word = ' ' + question[keyArray[i]]
+                answer = answer + word
+            }
+            this.english = answer
+        }
+
         // ワードを修正する
         async correctWord() {
             if(this.canAddWord) {
                 const wordDetails = {
                     id: this.id,
                     question: this.trimedQuestion,
-                    answer: this.trimedAnswer,
+                    answerIndex: this.answerIndex,
                     english: this.nullEnglish,
                     japanese: this.nullJapanese,
                     translation: this.nullTranslation

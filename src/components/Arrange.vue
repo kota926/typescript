@@ -4,7 +4,7 @@
         <div class="box7">
             <p>{{ currentWord.translation }}</p>
         </div>
-        <v-sheet height="140">
+        <v-sheet min-height="150">
             <v-container class="d-flex flex-wrap justify-start">
                 <v-btn v-for="(item, key) in yourAnswer" v-bind:key="key"
                     class="mx-2 my-1"
@@ -17,12 +17,13 @@
                 </v-btn>
             </v-container>
         </v-sheet>
-        <v-sheet height="150">
+        <v-sheet min-height="150">
             <v-container class="d-flex flex-wrap justify-start">
                 <v-btn v-for="(item, key) in questionArray" v-bind:key="key"
                     class="mx-2 my-1"
                     style="text-transform: none"
                     @click="passWord(item, key)"
+                    :disabled='isActive(key)'
                 >{{ item }}
                 </v-btn>
             </v-container>
@@ -47,9 +48,6 @@
                         elevation="10"
                         class="card"
                     >
-                        <v-card-title>
-                            解答：<div class="text-h5 text-sm-h4">{{ currentWord.answer }}</div>
-                        </v-card-title>
                         <div class="d-md-flex align-center">
                             <v-card-title>
                                 英語：<div class="text-h5 text-sm-h4">{{ currentWord.english }}</div>
@@ -77,7 +75,7 @@
     import { getList } from '../graphql/queries'
 
     interface word {
-    answer: string;
+    answerIndex: string;
     createdAt: string;
     english: string;
     id: string;
@@ -113,6 +111,7 @@
         correctArray = []
         questionArray = [] as string[]
         last = ""
+        selectedKey = [] as number[]
 
         created() {
             const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
@@ -130,6 +129,7 @@
         onYourAnswer() {
             if(this.yourAnswer.toString() === this.correctArray.toString()) {
                 this.yourAnswer = []
+                this.selectedKey = []
                 this.dialog = true
             }
         }
@@ -163,10 +163,11 @@
         onChangeIndex(next, pre) {
             this.currentWord = this.list.words.items[next]
         }
-        // 問題の末尾を取り除く
+        // 問題のピリオドを取り除き、スペースで区切って配列にする
         @Watch('currentWord')
         onChangeWord(next, pre) {
-            const q = next.question
+            const space = ' ' + ','
+            const q = next.question.replaceAll(',', space)
             if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
                 this.correctArray = q.slice(0, -1).split(" ")
                 this.last = q.slice(-1)
@@ -189,21 +190,31 @@
         get currentIndex() {
             return this.$store.state.currentIndex
         }
-        // クリックした単語を解答に送る
-        passWord(item: string) {
+        // クリックした単語を解答に送る、disableにする
+        passWord(item: string, key: number) {
             this.yourAnswer.push(item)
-            const index = this.questionArray.findIndex((word) => {
-                return word === item
-            })
-            this.questionArray.splice(index, 1)
+            // const index = this.questionArray.findIndex((word) => {
+            //     return word === item
+            // })
+            // this.questionArray.splice(index, 1)
+            this.selectedKey.push(key)
+        }
+
+        get isActive() {
+            return (key) => {
+                return this.selectedKey.some((k) => k === key)
+            }
         }
         // クリックした単語を問題に戻す
-        removeWord(item) {
-            this.questionArray.push(item)
+        removeWord(item, key) {
+            // this.questionArray.push(item)
             const index = this.yourAnswer.findIndex((word) => {
                 return word === item
             })
             this.yourAnswer.splice(index, 1)
+
+            const keyIndex = this.selectedKey.findIndex((k) => k === key)
+            this.selectedKey.splice(index, 1)
         }
         // 問題を飛ばす
         skip() {

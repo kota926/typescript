@@ -42,7 +42,7 @@
                         class="card"
                     >
                         <v-card-title>
-                            解答：<div class="text-h5 text-sm-h4">{{ currentWord.answer }}</div>
+                            解答：<div class="text-h5 text-sm-h4">{{ joinedAnswer }}</div>
                         </v-card-title>
                         <div class="d-md-flex align-center">
                             <v-card-title>
@@ -71,7 +71,7 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { getList } from '../graphql/queries'
 
 interface word {
-    answer: string;
+    answerIndex: [number];
     createdAt: string;
     english: string;
     id: string;
@@ -104,6 +104,8 @@ export default class FillBlank extends Vue {
     words = [] as word[]
     currentWord = {} as word
     currentQuestion = ""
+    currentAnswer = [] as string[]
+    joinedAnswer = ""
     
     created() {
         const list: any = API.graphql(graphqlOperation(getList, {id: this.$store.state.currentListID}))
@@ -119,8 +121,9 @@ export default class FillBlank extends Vue {
     // 正解判定
     @Watch('yourAnswer')
     onYourAnswer() {
-        if(this.yourAnswer === this.currentWord.answer) {
+        if(this.yourAnswer === this.currentAnswer.join(' ')) {
             this.yourAnswer = ""
+            this.currentAnswer = []
             this.dialog = true
         }
     }
@@ -156,10 +159,32 @@ export default class FillBlank extends Vue {
     // 問題文から正解の単語を抜きっとって、代わりにカッコを入れる
     @Watch('currentWord')
     onChangeWord(next, pre) {
-        const question = next.question
-        const answer = next.answer
         const blank = '( ' + "＿＿" + ' )'
-        this.currentQuestion = question.replaceAll(answer, blank)
+        let questionArray: [string]
+        const space = ' ' + ','
+        const q = next.question.replaceAll(',', space)
+        if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
+            questionArray = q.slice(0, -1).split(' ')
+            const index = next.answerIndex
+            for(let i = 0; i < index.length; i++) {
+                const answer = questionArray.splice(index[i], 1, blank)
+                const stringAnswer = answer.toString()
+                this.currentAnswer.push(stringAnswer)
+            }
+            questionArray.push(q.slice(-1, 0))
+            this.currentQuestion = questionArray.join(' ').replaceAll(space, ',')
+        } else {
+            questionArray = q.split(' ')
+            const index = next.answerIndex
+            for(let i = 0; i < index.length; i++) {
+                const answer = questionArray.splice(index[i], 1, blank)
+                const stringAnswer = answer.toString()
+                this.currentAnswer.push(stringAnswer)
+            }
+            this.currentQuestion = questionArray.join(' ').replaceAll(space, ',')
+        }
+        // 解説ページの見出し
+        this.joinedAnswer = this.currentAnswer.join(' ')
     }
 
     get currentIndex() {
@@ -168,6 +193,7 @@ export default class FillBlank extends Vue {
     
     skip() {
             this.yourAnswer = ""
+            this.currentAnswer = []
             this.dialog = true
     }
 }

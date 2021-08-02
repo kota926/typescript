@@ -12,25 +12,22 @@
             v-model="question"
             class="mb-n6"
         ></v-textarea>
+        <v-chip v-if="isShown" class="py-6 my-2 text-body-1" outlined label>
+            回答にしたい単語をクリック
+        </v-chip>
+        <v-container v-if="!isShown" class="d-flex flex-wrap justify-start">
+            <v-btn v-for="(item, key) in questionArray" v-bind:key="key"
+                class="mx-2 my-1"
+                style="text-transform: none"
+                @click="passKey(key)"
+                :class="{ primary : selectedItem(key) }"
+            >{{ item }}
+            </v-btn>
+        </v-container>
         <v-row>
             <v-col
             cols="12"
-            sm="12"
-            md="4"
-            class="mb-n10"
-            >
-            <v-text-field
-                label="解答"
-                placeholder="空欄の単語（英文中の単語と完全一致）"
-                outlined
-                req
-                v-model="answer"
-            ></v-text-field>
-            </v-col>
-            <v-col
-            cols="12"
             sm="6"
-            md="4"
             class="mb-n10"
             >
             <v-text-field
@@ -44,7 +41,6 @@
             <v-col
             cols="12"
             sm="6"
-            md="4"
             class="mb-n10"
             >
             <v-text-field
@@ -115,32 +111,37 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import { Component, Vue, Watch } from 'vue-property-decorator';
     import { API, graphqlOperation } from 'aws-amplify';
     import { createWord } from '../graphql/mutations'
 
     @Component
     export default class Resister extends Vue {
         question = ""
-        answer = ""
+        selectedKeyArray = [] as number[]
         english = ""
         japanese = ""
         translation = ""
         dialog = false
 
+        get isShown() {
+            if(this.trimedQuestion === "") {
+                return true
+            } else {
+                return false
+            }
+        }
+
         // ワードを追加できるか判定
         get canAddWord() {
-            if(this.trimedQuestion !== '' && this.trimedAnswer !== '') {
-                return this.trimedQuestion.includes(this.trimedAnswer)
+            if(this.trimedQuestion !== '' && this.selectedKeyArray !== []) {
+                return true
             } else {
                 return false
             }
         }
         get trimedQuestion() {
             return this.question.trim()
-        }
-        get trimedAnswer() {
-            return this.answer.trim()
         }
         get trimedEnglish() {
             return this.english.trim()
@@ -153,7 +154,7 @@
         }
         get nullEnglish() {
             if(this.trimedEnglish === "") {
-                return this.trimedAnswer
+                return "未記入"
             } else {
                 return this.trimedEnglish
             }
@@ -173,12 +174,52 @@
             }
         }
 
+        // 問題文のカンマの前に空白を挿入し、ピリオドを消去したあと、単語ごとの配列にして返す。
+        get questionArray() {
+            const space = ' ' + ','
+            const q = this.trimedQuestion.replaceAll(',', space)
+            if(q.endsWith('.') || q.endsWith('?') || q.endsWith('!')) {
+                return q.slice(0, -1).split(' ')
+            }
+            return q.split(' ') 
+        }
+
+        // クリックしたところのインデックスを格納、英語フォームに単語を渡す
+        passKey(key) {
+            const findKey = this.selectedKeyArray.findIndex((item) => {
+                return item === key
+            })
+            if(findKey === -1) {
+                this.selectedKeyArray.push(key)
+                this.selectedKeyArray.sort((a, b) => a - b)
+            } else {
+                this.selectedKeyArray.splice(findKey, 1)
+            }
+
+            let answer = this.questionArray[this.selectedKeyArray[0]]
+            const array = this.selectedKeyArray
+            const keyArray = this.selectedKeyArray
+            const question = this.questionArray
+            for(let i = 1; i < array.length; i++) {
+                const word = ' ' + question[keyArray[i]]
+                answer = answer + word
+            }
+            this.english = answer
+        }
+
+        // クリックされたボタンのクラスをアクティブにする
+        get selectedItem() {
+            return (key) => {
+                return this.selectedKeyArray.some((k) => k === key)
+            }
+        }
+
         async addWord() {
             if(this.canAddWord) {
                 const wordDetails = {
                 listID: this.$store.state.currentListID,
                 question: this.trimedQuestion,
-                answer: this.trimedAnswer,
+                answerIndex: this.selectedKeyArray,
                 english: this.nullEnglish,
                 japanese: this.nullJapanese,
                 translation: this.nullTranslation
@@ -190,7 +231,7 @@
                 this.$store.commit('unshiftWord', word.data.createWord)
 
                 this.question = ""
-                this.answer = ""
+                this.selectedKeyArray = []
                 this.english = ""
                 this.japanese = ""
                 this.translation = ""
@@ -204,5 +245,7 @@
 </script>
 
 <style scoped>
-
+.selected {
+    background-color: #2196F3;
+}
 </style>

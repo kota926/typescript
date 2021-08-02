@@ -71,7 +71,7 @@ export const getList = /* GraphQL */ `
           id
           listID
           question
-          answer
+          answerIndex
           english
           japanese
           translation
@@ -144,7 +144,7 @@ export const getWord = /* GraphQL */ `
         owner
       }
       question
-      answer
+      answerIndex
       english
       japanese
       translation
@@ -174,7 +174,7 @@ export const listWords = /* GraphQL */ `
           owner
         }
         question
-        answer
+        answerIndex
         english
         japanese
         translation
@@ -254,7 +254,7 @@ export const searchWords = /* GraphQL */ `
           owner
         }
         question
-        answer
+        answerIndex
         english
         japanese
         translation

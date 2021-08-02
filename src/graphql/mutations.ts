@@ -109,7 +109,7 @@ export const createList = /* GraphQL */ `
           id
           listID
           question
-          answer
+          answerIndex
           english
           japanese
           translation
@@ -151,7 +151,7 @@ export const updateList = /* GraphQL */ `
           id
           listID
           question
-          answer
+          answerIndex
           english
           japanese
           translation
@@ -193,7 +193,7 @@ export const deleteList = /* GraphQL */ `
           id
           listID
           question
-          answer
+          answerIndex
           english
           japanese
           translation
@@ -238,7 +238,7 @@ export const createWord = /* GraphQL */ `
         owner
       }
       question
-      answer
+      answerIndex
       english
       japanese
       translation
@@ -277,7 +277,7 @@ export const updateWord = /* GraphQL */ `
         owner
       }
       question
-      answer
+      answerIndex
       english
       japanese
       translation
@@ -316,7 +316,7 @@ export const deleteWord = /* GraphQL */ `
         owner
       }
       question
-      answer
+      answerIndex
       english
       japanese
       translation
