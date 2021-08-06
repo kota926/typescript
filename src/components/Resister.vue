@@ -8,12 +8,12 @@
             auto-grow
             name="input-7-4"
             label="英文"
-            placeholder="問題の英文を記入（TABキーで移動）"
+            placeholder="問題の英文を記入"
             v-model="question"
             class="mb-n6"
         ></v-textarea>
-        <v-chip v-if="isShown" class="py-6 my-2 text-body-1" outlined label>
-            回答にしたい単語をクリック
+        <v-chip v-if="isShown" class="py-6 my-2 text-body-1 max" outlined label>
+            解答にしたい単語をクリック
         </v-chip>
         <v-container v-if="!isShown" class="d-flex flex-wrap justify-start">
             <v-btn v-for="(item, key) in questionArray" v-bind:key="key"
@@ -112,8 +112,9 @@
 
 <script lang="ts">
     import { Component, Vue, Watch } from 'vue-property-decorator';
-    import { API, graphqlOperation } from 'aws-amplify';
+    import { API, graphqlOperation, Auth } from 'aws-amplify';
     import { createWord } from '../graphql/mutations'
+    import axios from 'axios'
 
     @Component
     export default class Resister extends Vue {
@@ -123,6 +124,8 @@
         japanese = ""
         translation = ""
         dialog = false
+
+        translatedEnglishText = ""
 
         get isShown() {
             if(this.trimedQuestion === "") {
@@ -185,7 +188,8 @@
         }
 
         // クリックしたところのインデックスを格納、英語フォームに単語を渡す
-        passKey(key) {
+        async passKey(key) {
+            this.$store.commit('changeLoading', true)
             const findKey = this.selectedKeyArray.findIndex((item) => {
                 return item === key
             })
@@ -205,6 +209,42 @@
                 answer = answer + word
             }
             this.english = answer
+
+            // 単語の翻訳
+            const user: any = await Auth.currentAuthenticatedUser()
+            const idToken = user.signInUserSession.idToken.jwtToken
+            console.log(idToken)
+            const url = "https://77vphomoi3.execute-api.us-east-1.amazonaws.com/production/translation"
+            const headers = { headers: {"Authorization": idToken}}
+
+            console.log(this.english)
+            if(this.english !== undefined) {
+                    const param = {
+                    text: this.english
+                }
+                const result: any = await axios.post(url, param, headers).catch((e) => {
+                    console.log(e)
+                    this.$store.commit('changeLoading', false)
+                })
+                console.log(result)
+                this.japanese = result.data
+            }
+            
+            // 問題文の翻訳
+            if(this.trimedQuestion !== this.translatedEnglishText) {
+                const param = {
+                    text: this.trimedQuestion
+                }
+                const result: any = await axios.post(url, param, headers).catch((e) => {
+                    console.log(e)
+                    this.$store.commit('changeLoading', false)
+                })
+                console.log(result)
+                this.translation = result.data
+
+                this.translatedEnglishText = this.trimedQuestion
+            }
+            this.$store.commit('changeLoading', false)
         }
 
         // クリックされたボタンのクラスをアクティブにする
@@ -212,6 +252,12 @@
             return (key) => {
                 return this.selectedKeyArray.some((k) => k === key)
             }
+        }
+
+        // questionqが変化したらselectedKeyArrayを初期化
+        @Watch('trimedQuestion')
+        onChangeQuestion() {
+            this.selectedKeyArray = []
         }
 
         async addWord() {
@@ -247,5 +293,8 @@
 <style scoped>
 .selected {
     background-color: #2196F3;
+}
+.max {
+    width: 100%;
 }
 </style>
