@@ -211,9 +211,9 @@
             this.english = answer
 
             // 単語の翻訳
+            // gateway 情報設定
             const user: any = await Auth.currentAuthenticatedUser()
             const idToken = user.signInUserSession.idToken.jwtToken
-            console.log(idToken)
             const url = "https://77vphomoi3.execute-api.us-east-1.amazonaws.com/production/translation"
             const headers = { headers: {"Authorization": idToken}}
 
