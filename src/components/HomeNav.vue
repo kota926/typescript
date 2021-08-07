@@ -59,21 +59,22 @@
         >
             <v-list>
                 <v-list-item>
-                    <v-chip label outlined class="text-body-1">
+                    <v-chip label outlined class="text-body-1 mx-auto mb-6 ma-6">
                         {{ name }}
                     </v-chip>
                 </v-list-item>
-                <v-list-item @click="dialog = true">
+                <!-- <v-list-item @click="dialog = true">
                     <v-list-item-icon>
                         <v-icon>mdi-delete</v-icon>
                     </v-list-item-icon>
-                    <v-list-item-title>初期化</v-list-item-title>
-                </v-list-item>
+                    <v-list-item-title>ローカルストレージ初期化</v-list-item-title>
+                </v-list-item> -->
                 <v-list-item>
                     <v-btn
                     @click="signOut"
                     color="primary"
                     outlined
+                    class="mx-auto"
                     >
                     ログアウト
                     </v-btn>

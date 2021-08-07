@@ -12,3 +12,11 @@ export default class App extends Vue {
 
 }
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+
+.v-application {
+  font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+}
+</style>

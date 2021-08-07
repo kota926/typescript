@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h2 class="ma-4">第{{ currentIndex + 1 }}問</h2>
+        <div class="ma-4 text-h5">第{{ currentIndex + 1 }}問</div>
         <div class="box7">
             <p>{{ currentWord.translation }}</p>
         </div>
@@ -248,7 +248,7 @@ h1 {
     text-align: center;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 960px) {
     .card {
         width: 100%;
     }

@@ -8,7 +8,7 @@
             auto-grow
             name="input-7-4"
             label="英文"
-            placeholder="問題の英文を記入"
+            placeholder="問題文となる英文を記入"
             v-model="question"
             class="mb-n6"
         ></v-textarea>

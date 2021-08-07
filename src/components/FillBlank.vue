@@ -1,10 +1,10 @@
 <template>
     <v-container>
-        <h2 class="ma-4">第{{ this.$store.state.currentIndex + 1 }}問</h2>
+        <div class="ma-4 text-h5">第{{ this.$store.state.currentIndex + 1 }}問</div>
         <div class="box7">
             <p>{{ currentWord.translation }}</p>
         </div>
-        <div class="box7">
+        <div class="box7 question">
             <p>{{ currentQuestion }}</p>
         </div>
         <v-row class="d-flex justify-center">
@@ -200,6 +200,7 @@ export default class FillBlank extends Vue {
 </script>
 
 <style scoped>
+
 h1 {
   background: #dfefff;
   box-shadow: 0px 0px 0px 5px #dfefff;
@@ -226,7 +227,11 @@ h1 {
     text-align: center;
 }
 
-@media screen and (max-width: 480px) {
+.question {
+    font-family: 'Roboto', 'sans-selif';
+}
+
+@media screen and (max-width: 960px) {
     .card {
         width: 100%;
     }
