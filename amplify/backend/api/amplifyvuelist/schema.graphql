@@ -4,31 +4,29 @@ type User
   id: ID!
   name: String!
   categories: [String]!
-  lists: [List] @connection(keyName: "byUser", fields: ["id"])
+  lists: [List] @hasMany(keyName: "byUser", fields: ["id"])
 }
 
 type List
   @model
   @auth(rules: [{ allow: owner, operations: [create, delete, update]}])
-  @searchable
-  @key(name: "byUser", fields: ["userID"]) {
+  @searchable {
   id: ID!
   title: String!
-  userID: ID!
-  user: User @connection(fields: ["userID"])
+  userID: ID! @index(name: "byUser")
+  user: User @belongsTo(fields: ["userID"])
   categories: [String]!
-  words: [Word] @connection(keyName: "byList", fields: ["id"])
+  words: [Word] @hasMany(keyName: "byList", fields: ["id"])
   createdAt: AWSDateTime!
 }
 
 type Word
   @model
   @auth(rules: [{ allow: owner, operations: [create, delete, update]}])
-  @searchable
-  @key(name: "byList", fields: ["listID", "question"]) {
+  @searchable {
   id: ID!
-  listID: ID!
-  list: List @connection(fields: ["listID"])
+  listID: ID! @index(name: "byList", sortKeyFields: ["question"])
+  list: List @belongsTo(fields: ["listID"])
   question: String!
   answerIndex: [Int]
   english: String
