@@ -4,7 +4,7 @@ type User
   id: ID!
   name: String!
   categories: [String]!
-  lists: [List] @hasMany(keyName: "byUser", fields: ["id"])
+  lists: [List] @hasMany(indexName: "byUser", fields: ["id"])
 }
 
 type List
@@ -16,7 +16,7 @@ type List
   userID: ID! @index(name: "byUser")
   user: User @belongsTo(fields: ["userID"])
   categories: [String]!
-  words: [Word] @hasMany(keyName: "byList", fields: ["id"])
+  words: [Word] @hasMany(indexName: "byList", fields: ["id"])
   createdAt: AWSDateTime!
 }
 
